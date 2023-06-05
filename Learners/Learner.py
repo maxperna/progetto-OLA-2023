@@ -10,9 +10,9 @@ class Learner(ABC):
     :n_arms: the number of arms
     """
     def __init__(self,n_arms):
-        self.n_arms=n_arms
+        self.n_arms = n_arms
         # Round we are currently in
-        self.t=0
+        self.t = 0
         self.reward_per_arm =  [[] for i in range(n_arms)]
         # cumulative rewards for each arm
         self.collected_rewards = np.array([])
