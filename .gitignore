@@ -1,1 +1,3 @@
-/venvOLA
+# Ignore virtual environment
+venvOLA/
+
