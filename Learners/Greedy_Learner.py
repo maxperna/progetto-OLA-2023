@@ -17,6 +17,6 @@ class Greedy_Learner (Learner):
     
     def update (self, pulled_arm, reward, price):
         self.t += 1
-        self.update_observation(pulled_arm, reward*price)   # update with reward*price
+        self.update_observations(pulled_arm, reward*price)   # update with reward*price
         self.expected_rewards[pulled_arm] = (self.expected_rewards[pulled_arm] * (self.t - 1) + reward*price) / self.t
     

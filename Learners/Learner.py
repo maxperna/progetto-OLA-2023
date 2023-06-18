@@ -22,7 +22,7 @@ class Learner(ABC):
     :pulled_arm: the played arm
     :reward: the reward given by the pulled arm
     """
-    def update_observation(self,pulled_arm,reward):
+    def update_observations(self,pulled_arm,reward):
         # Update the rewards given by an arm
         self.reward_per_arm[pulled_arm].append(reward)
         # Update the cumulative reward for the played arm
