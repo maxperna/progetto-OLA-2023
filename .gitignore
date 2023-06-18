@@ -1,3 +1,5 @@
 # Ignore virtual environment
 venvOLA/
 
+# Ignore cache
+__pycache__/
