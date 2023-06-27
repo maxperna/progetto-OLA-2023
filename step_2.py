@@ -7,8 +7,8 @@ from Environments.Bidding_environment import BiddingEnvironment
 from Learners.GPTS_Learner import GPTS_Learner
 from Learners.GPUCB1_Learner import GPUCB1_Learner
 
-%load_ext autoreload
-%autoreload 2
+#%load_ext autoreload
+#%autoreload 2
 
 # %% Parameters
 n_arms = 20
@@ -52,7 +52,7 @@ avg_regret_gpucb1 = np.mean(opt - gpucb1_rewards_per_experiment, axis=0)
 cum_regret_gpucb1 = np.cumsum(avg_regret_gpucb1)
 std_regret_gpucb1 = np.std(opt - gpucb1_rewards_per_experiment, axis=0)
 
-# %% Plot the cumularive regret
+# %% Plot the cumulative regret
 fig = plt.figure(0)
 plt.xlabel("t")
 plt.ylabel("Regret")
@@ -80,4 +80,55 @@ plt.show()
 
 fig.savefig("results/S2_instantaneous_regret.png")
 
-# %%
+# %% Plot the cumulative reward
+plt.figure(1)
+plt.xlabel("t")
+plt.ylabel("Reward")
+plt.plot(np.cumsum(np.mean(gpucb1_rewards_per_experiment, axis=0)), 'b')
+plt.plot(np.cumsum(np.mean(gpts_rewards_per_experiment, axis=0)), 'r')
+plt.legend(["Greedy", "UCB1", "TS"])
+plt.title("Cumulative Reward")
+plt.show()
+
+# %% Plot the instantaneous reward
+plt.figure(3)
+plt.xlabel("t")
+plt.ylabel("Reward")
+plt.plot(np.mean(gpucb1_rewards_per_experiment, axis=0), 'b')
+plt.plot(np.mean(gpts_rewards_per_experiment, axis=0), 'r')
+plt.hlines(y=opt, xmin=0, xmax=T, colors='k', linestyles='dashed')
+plt.legend(["Greedy", "UCB1", "TS", "Clairvoyant"])
+plt.title("Instantaneous Reward")
+plt.show()
+
+# %% Plot the instantaneous regret with standard deviation
+plt.figure(4)
+plt.xlabel("t")
+plt.ylabel("Regret")
+plt.plot(avg_regret_gpucb1, 'b')
+plt.plot(avg_regret_gpts, 'r')
+plt.hlines(y=0, xmin=0, xmax=T, colors='k', linestyles='dashed')
+plt.fill_between(range(len(avg_regret_gpucb1)), avg_regret_gpucb1 - std_regret_gpucb1, avg_regret_gpucb1 + std_regret_gpucb1, color='b', alpha=0.2)
+plt.fill_between(range(len(avg_regret_gpts)), avg_regret_gpts - std_regret_gpts, avg_regret_gpts + std_regret_gpts, color='r', alpha=0.2)
+plt.legend(["Greedy", "UCB1", "TS", "Clairvoyant"])
+plt.title("Instantaneous Regret with Standard Deviation")
+plt.show()
+
+
+# %% Plot of cumulative regret with variance
+avg_cum_regret_ucb1 = np.cumsum(avg_regret_gpucb1)
+avg_cum_regret_ts = np.cumsum(avg_regret_gpts)
+
+std_cum_regret_ucb1 = np.cumsum(std_regret_gpucb1)
+std_cum_regret_ts = np.cumsum(std_regret_gpts)
+
+plt.figure(1)
+plt.xlabel("t")
+plt.ylabel("Regret")
+plt.plot(avg_cum_regret_ucb1, 'b')
+plt.plot(avg_cum_regret_ts, 'r')
+plt.fill_between(range(len(avg_cum_regret_ucb1)), avg_cum_regret_ucb1 - std_cum_regret_ucb1, avg_cum_regret_ucb1 + std_cum_regret_ucb1, alpha=0.2, color='b')
+plt.fill_between(range(len(avg_cum_regret_ts)), avg_cum_regret_ts - std_cum_regret_ts, avg_cum_regret_ts + std_cum_regret_ts, alpha=0.2, color='r')
+plt.legend(["Greedy", "UCB1", "TS"])
+plt.title("Cumulative Regret with standard deviation")
+plt.show()
