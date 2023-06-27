@@ -11,7 +11,7 @@ from Learners.GPUCB1_Learner import GPUCB1_Learner
 #%autoreload 2
 
 # %% Parameters
-n_arms = 20
+n_arms = 100  #number of possible bids
 min_bid = 0.0
 max_bid = 1.0
 bids = np.linspace(min_bid, max_bid, n_arms)
