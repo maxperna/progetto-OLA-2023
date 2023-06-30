@@ -43,7 +43,7 @@ class GPUCB1_Learner(Learner):
         """
         # Prepare X, y for GP
         x = np.atleast_2d(self.pulled_arms).T
-        y = self.collected_rewards
+        y = np.array(self.collected_rewards).reshape(-1,1)
 
         # Retrain the GP
         self.gp.fit(x, y)

@@ -5,6 +5,7 @@ from Environments.Users import *
 class Environment:
     avg_n_users = 100
     n_rounds = 365
+    retailer_cost = 80    #retailer cost of a product
     def __init__(self, n_arms = 5, user = UserC1()):
         self.n_arms = n_arms  # 5 prices
         self.user = user
