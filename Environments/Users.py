@@ -107,6 +107,7 @@ class User(ABC):
         """
         Method used to generate observations for the specific class of user with noise
         """
+        # TODO pass noise as parameter
         return self.click_vs_bid(bid) + np.random.normal(0, self._std_noise, size = self.click_vs_bid(bid).shape)
 
     def plot_click_vs_bid(self):
@@ -144,9 +145,7 @@ class UserC1(User):
     """
 
     def __init__(self):
-        probabilities = np.array([0.3, 0.5, 0.85, 0.8, 0.7])
-        self.noise_std = 10
-        super().__init__(True, True, probabilities)
+        super().__init__(True, True, np.array([0.3, 0.5, 0.85, 0.8, 0.7]))
 
     def click_vs_bid(self, bid):
             return (1 - np.exp(- 5.0 * bid))  * 100

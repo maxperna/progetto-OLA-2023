@@ -27,5 +27,5 @@ class UCB1_Learner(Learner):
     def update(self, pulled_arm, reward, price):
         self.t += 1
         self.n_pulls[pulled_arm] += 1
-        self.update_observations(pulled_arm, reward*price)       # update with reward*price
-        self.expected_rewards[pulled_arm] = (self.expected_rewards[pulled_arm] * (self.t - 1) + reward * price) / self.t
+        self.update_observations(pulled_arm, reward*price)      # TODO update with reward*price
+        self.expected_rewards[pulled_arm] = (self.expected_rewards[pulled_arm] * (self.n_pulls[pulled_arm] - 1) + reward * price) / self.n_pulls[pulled_arm]  # TODO check t_elemnt

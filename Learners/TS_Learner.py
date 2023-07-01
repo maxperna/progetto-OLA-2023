@@ -22,7 +22,7 @@ class TS_Learner(Learner):
     def update(self,pulled_arm,reward, price):
         # Increase time
         self.t += 1
-        self.update_observations(pulled_arm, reward*price)
+        self.update_observations(pulled_arm, reward*price) # TODO update with reward*price
         # Update parameters
         self.beta_param[pulled_arm,0] = self.beta_param[pulled_arm,0] + reward
         self.beta_param[pulled_arm,1] = self.beta_param[pulled_arm,1] + 1.0 - reward
