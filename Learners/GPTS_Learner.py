@@ -15,7 +15,7 @@ class GPTS_Learner(Learner):
         # Assignments and Initializations
         self.arms = bids
         self.means = np.zeros(self.n_arms)
-        self.sigmas = np.ones(self.n_arms) * 100
+        self.sigmas = np.ones(self.n_arms) * 10.0
         self.pulled_arms = []
         alpha = 0.5  # alpha
 

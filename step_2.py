@@ -11,7 +11,7 @@ from Learners.GPUCB1_Learner import GPUCB1_Learner
 #%autoreload 2
 
 # %% Parameters
-n_arms = 100
+n_arms = 100  #number of possible bids
 min_bid = 0.0
 max_bid = 1.0
 bids = np.linspace(min_bid, max_bid, n_arms)
@@ -74,6 +74,7 @@ plt.plot(avg_regret_gpucb1, 'b')
 plt.plot(avg_regret_gpts, 'r')
 plt.fill_between(range(len(avg_regret_gpucb1)), avg_regret_gpucb1 - std_regret_gpucb1, avg_regret_gpucb1 + std_regret_gpucb1, alpha=0.2, color='b')
 plt.fill_between(range(len(avg_regret_gpts)), avg_regret_gpts - std_regret_gpts, avg_regret_gpts + std_regret_gpts, alpha=0.2, color='r')
+plt.hlines(0, 0, T, colors='black', linestyles='dashed')
 plt.legend(["GP-UCB1", "GPTS"])
 fig = plt.gcf()
 plt.show()
