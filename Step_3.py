@@ -1,3 +1,4 @@
+# %%
 import numpy as np
 import matplotlib.pyplot as plt
 from Environments.Environment import Environment
@@ -19,26 +20,28 @@ prices = Collector.prices
 sigma = 10
 
 #Generate an action space with both the bids and the price
-action_space = np.array([[bid,price] for bid in bids for price in prices])
+action_space = np.array([[bid,price] for bid in bids for price in prices]) # all combinations of bid and price
 n_arms = action_space.shape[0]
 
 T = 365
 
-n_experiments = 1000
+n_experiments = 2 # too much, I guess
 gpts_rewards_per_experiment = []
 gpucb1_rewards_per_experiment = []
-bids_made_per_experiment = []   #the bids made by the learner
+bids_made_per_experiment = []   #the bids made by the learner # ?
 
+
+#%% Parameters
 #Contextual multi-armed bandit to be implemented
 for e in range(0, n_experiments):
-    env = BiddingEnvironment(bids=bids, sigma = sigma, user=UserC1())
+    env = BiddingEnvironment(bids=action_space, sigma = sigma, user=UserC1())
     gpts_learner = GPTS_Learner(n_arms = n_arms, bids = action_space)
-    gpucb1_learner = GPUCB1_Learner(n_arms = n_arms, bids = action_space, M = max_bid)
+    #gpucb1_learner = GPUCB1_Learner(n_arms = n_arms, bids = action_space, M = max_bid)
     for t in range(0, T):
         # GP UCB1 Learner
-        pulled_arm = gpucb1_learner.pull_arm()
-        reward = env.round(pulled_arm)
-        gpucb1_learner.update(pulled_arm, reward)
+        #pulled_arm = gpucb1_learner.pull_arm()
+        #reward = env.round(pulled_arm)
+        #gpucb1_learner.update(pulled_arm, reward)
 
         # GP Thompson Sampling Learner
         pulled_arm = gpts_learner.pull_arm()
@@ -46,4 +49,5 @@ for e in range(0, n_experiments):
         gpts_learner.update(pulled_arm, reward)
 
     gpts_rewards_per_experiment.append(gpts_learner.collected_rewards)
-    gpucb1_rewards_per_experiment.append(gpucb1_learner.collected_rewards)
+    #gpucb1_rewards_per_experiment.append(gpucb1_learner.collected_rewards)
+# %%
