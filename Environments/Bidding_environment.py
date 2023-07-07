@@ -8,7 +8,7 @@ class BiddingEnvironment():
 
         # Assignments and Initializations
         self.bids = bids
-        self.means = user.click_vs_bid(bids)   # real function
+        self.means = user.demand_curve(user.prices) + user.click_vs_bid(bids) # real function # I try with the sum
         self.sigmas = np.ones(len(bids)) * sigma 
 
     def round(self, pulled_arm):
