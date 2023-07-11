@@ -2,13 +2,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-#from Environments.Environment import Environment
 from Environments.Pricing_Bidding_environment import PricingBiddingEnvironment
 from Environments.Users import UserC1
-from Learners.GPTS_Learner import GPTS_Learner
-from Learners.GPUCB1_Learner import GPUCB1_Learner
-#from Learners.TS_Learner import TS_Learner
-#from Learners.UCB1_Learner import UCB1_Learner
+from Learners.GPTS_Learner_s3 import GPTS_Learner
+from Learners.GPUCB1_Learner_s3 import GPUCB1_Learner
 
 # %% Parameters
 n_bids = 100
@@ -29,7 +26,6 @@ T = 365
 n_experiments = 4
 gpts_rewards_per_experiment = []
 gpucb1_rewards_per_experiment = []
-#bids_made_per_experiment = [] #the bids made by the learner # ?
 
 # %% Run the experiments
 for e in range(0, n_experiments):
@@ -51,7 +47,6 @@ for e in range(0, n_experiments):
     gpucb1_rewards_per_experiment.append(gpucb1_learner.collected_rewards)
 
 # %% Compute the regret
-#opt = np.max([np.max(gpts_rewards_per_experiment,axis=1), np.max(gpucb1_rewards_per_experiment, axis=1)])
 opt = np.max(env.means)
 avg_regret_gpts = np.mean(opt - gpts_rewards_per_experiment, axis=0)
 cum_regret_gpts = np.cumsum(avg_regret_gpts)
@@ -72,7 +67,7 @@ plt.legend(["GP-UCB1", "GP-TS"])
 fig = plt.gcf()
 plt.show()
 
-#fig.savefig("results/S3_cumulative_regret.png")
+fig.savefig("results/S3_cumulative_regret.png")
 
 # %% Plot the instantaneous regret
 fig = plt.figure(1)
@@ -87,7 +82,7 @@ plt.legend(["GP-UCB1", "GP-TS"])
 fig = plt.gcf()
 plt.show()
 
-#fig.savefig("results/S3_instantaneous_regret.png")
+fig.savefig("results/S3_instantaneous_regret.png")
 
 # %% Plot the cumulative reward
 plt.figure(1)
