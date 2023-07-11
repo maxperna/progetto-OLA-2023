@@ -18,3 +18,4 @@ class PricingBiddingEnvironment():
         '''Simulate the current round of bidding with the given pulled arm. Returns the realization of a random normal with set mean and std.'''
         reward = np.random.normal(self.means[pulled_arm], self.sigmas[pulled_arm])
         return reward
+    
