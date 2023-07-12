@@ -26,6 +26,7 @@ T = 365
 n_experiments = 4
 gpts_rewards_per_experiment = []
 gpucb1_rewards_per_experiment = []
+#bids_made_per_experiment = [] #the bids made by the learner
 
 # %% Run the experiments
 for e in range(0, n_experiments):

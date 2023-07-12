@@ -33,7 +33,6 @@ class GPUCB1_Learner(Learner):
         """
         Update internal state given last action and its outcome
         """
-        #
         super().update_observations(pulled_arm, reward)
         self.pulled_arms.append(self.arms[pulled_arm])
 
@@ -43,8 +42,8 @@ class GPUCB1_Learner(Learner):
         """
         # Prepare X, y for GP
         #x = np.atleast_2d(self.pulled_arms).T
-        #x = np.atleast_2d(self.pulled_arms)
-        x=np.array(self.pulled_arms)
+        x = np.atleast_2d(self.pulled_arms)
+        #x=np.array(self.pulled_arms)
         y = self.collected_rewards
 
         # Retrain the GP
@@ -52,8 +51,8 @@ class GPUCB1_Learner(Learner):
 
         # Retrieve predictions from GP
         #self.means, self.sigmas = self.gp.predict(np.atleast_2d(self.arms).T, return_std=True)
-        #self.means, self.sigmas = self.gp.predict(self.arms, return_std=True)
-        self.means, self.sigmas = self.gp.predict(np.array(self.arms), return_std=True)
+        self.means, self.sigmas = self.gp.predict(np.atleast_2d(self.arms), return_std=True)
+        #self.means, self.sigmas = self.gp.predict(np.array(self.arms), return_std=True)
 
         # sigma lower bound
         self.sigmas = np.maximum(self.sigmas, 1e-2)

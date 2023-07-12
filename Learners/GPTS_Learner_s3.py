@@ -17,7 +17,7 @@ class GPTS_Learner(Learner):
         self.means = np.zeros(self.n_arms)
         self.sigmas = np.ones(self.n_arms) * 10.0
         self.pulled_arms = []
-        alpha = 0.5  # alpha
+        alpha = 0.5 # alpha
 
         # The kernel is set as the product of a constant and a Radial-basis with values 1 and range 1e-3 to 1e3
         theta = 1.0
@@ -39,8 +39,8 @@ class GPTS_Learner(Learner):
         '''Updates the model with the new means and sigmas.'''
         # Sets the trimmed pulled arms vs rewards
         #x = np.atleast_2d(self.pulled_arms).T
-        #x = self.pulled_arms
-        x = np.array(self.pulled_arms)
+        x = np.atleast_2d(self.pulled_arms)
+        #x = np.array(self.pulled_arms)
         y = self.collected_rewards
 
         # Fits the Gaussian process
@@ -49,8 +49,8 @@ class GPTS_Learner(Learner):
         # Evaluates current means and sigmas with a lower bound on the standard deviation of 0.01 (for convergence)
         #self.means, self.sigmas = self.gp.predict(np.atleast_2d(self.arms[:,1]).T, return_std=True)
         # TODO perché [:,1]? Nell'implementazione del lab non c'è
-        #self.means, self.sigmas = self.gp.predict(self.arms, return_std=True)
-        self.means, self.sigmas = self.gp.predict(np.array(self.arms), return_std=True)
+        self.means, self.sigmas = self.gp.predict(np.atleast_2d(self.arms), return_std=True)
+        #self.means, self.sigmas = self.gp.predict(np.array(self.arms), return_std=True)
         self.sigmas = np.maximum(self.sigmas, 1e-2)
 
     def update(self, pulled_arm, reward):
