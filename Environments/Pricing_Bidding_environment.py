@@ -12,7 +12,7 @@ class PricingBiddingEnvironment():
         self.actions = actions
         step=5 # len(prices)
         self.means=[]
-        for i in range(1,101): # len(bids)=100
+        for i in range(1,len(bids)+1)
             self.means[step*(i-1):step*i] = user.demand_curve(user.prices) * np.repeat(user.click_vs_bid(bids[i-1]),step)
         self.sigmas = np.ones(len(actions)) * sigma 
 
