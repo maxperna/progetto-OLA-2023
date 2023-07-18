@@ -32,7 +32,7 @@ gpucb1_rewards_per_experiment = []
 for e in range(0, n_experiments):
     env = PricingBiddingEnvironment(actions=action_space, bids=bids, sigma = sigma, user=UserC1())
     gpts_learner = GPTS_Learner(n_arms = n_arms, bids = action_space)
-    gpucb1_learner = GPUCB1_Learner(n_arms = n_arms, bids = action_space, M = max_bid)
+    gpucb1_learner = GPUCB1_Learner(n_arms = n_arms, bids = action_space, M = np.max(action_space[:,0]*action_space[:,1]))
     for t in range(0, T):
         # GP UCB1 Learner
         pulled_arm = gpucb1_learner.pull_arm()
