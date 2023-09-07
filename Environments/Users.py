@@ -148,7 +148,11 @@ class UserC1(User):
         super().__init__(True, True, np.array([0.3, 0.5, 0.85, 0.8, 0.7]))
 
     def click_vs_bid(self, bid):
-            return (1 - np.exp(- 5.0 * bid))  * 100
+        return (1 - np.exp(- 5.0 * bid))  * 100
+
+    def cumulative_cost_vs_bid(self, bid):
+        return 100 * (1-np.exp(-2*bid+bid**3))
+
     
 
 class UserC2(User):

@@ -3,12 +3,12 @@ import numpy as np
 class BiddingEnvironment():
     '''Bidding Environment Class'''
 
-    def __init__(self, bids, sigma, user):  
+    def __init__(self, bids, sigma, margin, rate, user):  
         """Initialize the Bidding Environment Class with the bids, means and sigmas."""
 
         # Assignments and Initializations
         self.bids = bids
-        self.means = user.click_vs_bid(bids)   # real function
+        self.means = margin*rate*user.click_vs_bid(bids) - user.cumulative_cost_vs_bid(bids)  # real function
         self.sigmas = np.ones(len(bids)) * sigma 
 
     def round(self, pulled_arm):

@@ -22,9 +22,16 @@ n_experiments = 4
 gpts_rewards_per_experiment = []
 gpucb1_rewards_per_experiment = []
 
+selected_price = 300
+production_cost = 75
+margin = selected_price - production_cost
+
+Collector = UserC1()
+conversion_rate = Collector.demand_curve(selected_price)
+
 # %% Run the experiments
 for e in range(0, n_experiments):
-    env = BiddingEnvironment(bids=bids, sigma = sigma, user=UserC1())
+    env = BiddingEnvironment(bids=bids, sigma = sigma, margin = margin, rate = conversion_rate, user=UserC1())
     gpts_learner = GPTS_Learner(n_arms = n_arms, bids = bids)
     gpucb1_learner = GPUCB1_Learner(n_arms = n_arms, bids = bids, M = max_bid)
     for t in range(0, T):
@@ -133,3 +140,4 @@ plt.fill_between(range(len(avg_cum_regret_ts)), avg_cum_regret_ts - std_cum_regr
 plt.legend(["Greedy", "UCB1", "TS"])
 plt.title("Cumulative Regret with standard deviation")
 plt.show()
+# %%
