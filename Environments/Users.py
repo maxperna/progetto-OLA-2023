@@ -141,7 +141,7 @@ class User(ABC):
 class UserC1(User):
     """
     User class C1
-    Collcetor User
+    Collector User
     """
 
     def __init__(self):
@@ -151,6 +151,7 @@ class UserC1(User):
         return (1 - np.exp(- 5.0 * bid))  * 100
 
     def cumulative_cost_vs_bid(self, bid):
+        # cambiare
         return 100 * (1-np.exp(-2*bid+bid**3))
 
     

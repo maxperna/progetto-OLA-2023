@@ -17,6 +17,7 @@ class Learner(ABC):
         # cumulative rewards for each arm
         self.collected_rewards = np.array([])
 
+
     """
     Method that updates the observations coming from the environment
     :pulled_arm: the played arm

@@ -11,8 +11,18 @@ from Learners.UCB1_Learner import UCB1_Learner
 # %% Create the three classes of users
 n_arm = 5
 Collector = UserC1()
+
+#selected_bid = np.argmax(Collector.click_vs_bid())
+selected_bid = 0.5
+#n_clicks = np.max(Collector.click_vs_bid())
+#cumulative_cost=Collector.cumulative_cost_vs_bid(selected_bid)
+n_clicks = Collector.click_vs_bid(selected_bid)
+cumulative_cost=Collector.cumulative_cost_vs_bid(selected_bid)
+production_cost = 75
+
 avg_n_users = 1     # for future optimization
-opt = max(Collector.prices * Collector.probabilities) * avg_n_users
+#opt = max(Collector.prices * Collector.probabilities) * avg_n_users
+opt = max((Collector.prices-production_cost)*Collector.probabilities*n_clicks - cumulative_cost)
 
 T = 365
 
@@ -21,13 +31,12 @@ ts_rewards_per_experiment = []
 gr_rewards_per_experiment = []
 ucb1_rewards_per_experiment = []
 
-
 # %% Run the experiments
 for e in range(0, n_experiments):
     env = Environment(n_arms=n_arm, user=Collector)
-    ts_learner = TS_Learner(n_arms=n_arm)
-    gr_learner = Greedy_Learner(n_arms=n_arm)
-    ucb1_learner = UCB1_Learner(n_arms=n_arm, M = Collector._max_price)
+    ts_learner = TS_Learner(n_arms=n_arm, production_cost=production_cost, n_clicks=n_clicks, cumulative_cost=cumulative_cost)
+    gr_learner = Greedy_Learner(n_arms=n_arm, production_cost=production_cost, n_clicks=n_clicks, cumulative_cost=cumulative_cost)
+    ucb1_learner = UCB1_Learner(n_arms=n_arm, production_cost=production_cost, n_clicks=n_clicks, cumulative_cost=cumulative_cost, M = Collector._max_price)
     for t in range(0, T):
         # Thompson Sampling Learner
         pulled_arm = ts_learner.pull_arm(Collector.prices)

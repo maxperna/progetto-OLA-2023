@@ -22,12 +22,14 @@ n_experiments = 4
 gpts_rewards_per_experiment = []
 gpucb1_rewards_per_experiment = []
 
+Collector = UserC1()
+
+#selected_price = np.argmax(Collector.demand_curve())
 selected_price = 300
+#conversion_rate = np.max(Collector.demand_curve())
+conversion_rate = Collector.demand_curve(selected_price)
 production_cost = 75
 margin = selected_price - production_cost
-
-Collector = UserC1()
-conversion_rate = Collector.demand_curve(selected_price)
 
 # %% Run the experiments
 for e in range(0, n_experiments):

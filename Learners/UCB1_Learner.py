@@ -7,8 +7,12 @@ from Learners.Learner import Learner
 
 class UCB1_Learner(Learner):
 
-    def __init__(self, n_arms, M):
+    def __init__(self, n_arms, production_cost, n_clicks, cumulative_cost, M):
         super().__init__(n_arms)
+        self.production_cost = production_cost
+        self.n_clicks = n_clicks
+        self.cumulative_cost = cumulative_cost
+
         self.expected_rewards = np.zeros(n_arms)
         self.n_pulls = np.zeros(n_arms)
         self.upper_confidence_bounds = np.array([np.inf]*n_arms)
@@ -27,5 +31,6 @@ class UCB1_Learner(Learner):
     def update(self, pulled_arm, reward, price):
         self.t += 1
         self.n_pulls[pulled_arm] += 1
-        self.update_observations(pulled_arm, reward*price)      # TODO update with reward*price
-        self.expected_rewards[pulled_arm] = (self.expected_rewards[pulled_arm] * (self.n_pulls[pulled_arm] - 1) + reward * price) / self.n_pulls[pulled_arm]  # TODO check t_elemnt
+        gain = (price-self.production_cost)*reward*self.n_clicks - self.cumulative_cost
+        self.update_observations(pulled_arm, gain)      # TODO update with reward*price
+        self.expected_rewards[pulled_arm] = (self.expected_rewards[pulled_arm] * (self.n_pulls[pulled_arm] - 1) + gain) / self.n_pulls[pulled_arm]  # TODO check t_elemnt
