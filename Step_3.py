@@ -17,6 +17,8 @@ Collector = UserC1()
 prices = Collector.prices
 sigma = 10
 
+production_cost = 75
+
 # Generate an action space with both bids and prices
 action_space = np.array([[bid,price] for bid in bids for price in prices]) # all combinations of bid and price
 n_arms = action_space.shape[0]
@@ -30,7 +32,7 @@ gpucb1_rewards_per_experiment = []
 
 # %% Run the experiments
 for e in range(0, n_experiments):
-    env = PricingBiddingEnvironment(actions=action_space, bids=bids, sigma = sigma, user=UserC1())
+    env = PricingBiddingEnvironment(actions=action_space, bids=bids, sigma = sigma, user=UserC1(), production_cost=production_cost)
     gpts_learner = GPTS_Learner(n_arms = n_arms, bids = action_space)
     gpucb1_learner = GPUCB1_Learner(n_arms = n_arms, bids = action_space, M = np.max(action_space[:,0]*action_space[:,1]))
     for t in range(0, T):
@@ -136,3 +138,5 @@ plt.fill_between(range(len(avg_cum_regret_ts)), avg_cum_regret_ts - std_cum_regr
 plt.legend(["GP-UCB1", "GP-TS"])
 plt.title("Cumulative Regret with standard deviation")
 plt.show()
+
+# %%
