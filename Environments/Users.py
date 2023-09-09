@@ -2,7 +2,9 @@ from abc import ABC, abstractmethod
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
+import json
 
+config = json.load(open("Configurations/User_config.json"))
 
 class User(ABC):
     """
@@ -145,7 +147,7 @@ class UserC1(User):
     """
 
     def __init__(self):
-        super().__init__(True, True, np.array([0.3, 0.5, 0.85, 0.8, 0.7]))
+        super().__init__(True, True, np.array(config["purchase_probabilities"]["userC1"]))
 
     def click_vs_bid(self, bid):
         return (1 - np.exp(- 5.0 * bid))  * 100
@@ -162,11 +164,12 @@ class UserC2(User):
     Parent User
     """
     def __init__(self):
-        probabilities = np.array([0.3, 0.5, 0.7, 0.85, 0.8])
+        probabilities = np.array(config["purchase_probabilities"]["userC2"])
         super().__init__(True, False, probabilities)
 
     def click_vs_bid(self, bid):
         # TODO
+        return (1 - np.exp(- 5.0 * bid)) * 100
         pass
     
 
@@ -176,12 +179,13 @@ class UserC3(User):
     Young User
     """
     def __init__(self):
-        feature1 = False
-        feature2 = np.random.choice([True, False])
-        probabilities = np.array([0.7, 0.8, 0.7, 0.5, 0.3])
-        super().__init__(feature1, feature2, probabilities)
+        feature_1 = False
+        feature_2 = np.random.choice([True, False])
+        probabilities = np.array(config["purchase_probabilities"]["userC3"])
+        super().__init__(feature_1, feature_2, probabilities)
     
     def click_vs_bid(self, bid):
         # TODO
+        return (1 - np.exp(- 5.0 * bid)) * 100
         pass
     
