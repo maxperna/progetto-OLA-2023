@@ -1,9 +1,9 @@
 import numpy as np
-from Users import UserC1,UserC2,UserC3
+from Environments.Users import UserC1,UserC2,UserC3
 
 
 class ContextEnvironment():
-    def __init__(self,actions,bids,sigma):
+    def __init__(self,actions,bids,sigma,user_set):
         """
                 Initialize the Bidding Environment Class with the actions, means and sigmas.
         """
@@ -15,9 +15,9 @@ class ContextEnvironment():
         self.means_C2 = []
         self.means_C3 = []
         for i in range(1, len(bids) + 1):
-            self.means_C1[step * (i - 1):step * i] = UserC1.demand_curve(UserC1.prices) * np.repeat(UserC1.click_vs_bid(bids[i - 1]), step)
-            self.means_C2[step * (i - 1):step * i] = UserC2.demand_curve(UserC2.prices) * np.repeat(UserC2.click_vs_bid(bids[i - 1]), step)
-            self.means_C3[step * (i - 1):step * i] = UserC3.demand_curve(UserC3.prices) * np.repeat(UserC3.click_vs_bid(bids[i - 1]), step)
+            self.means_C1[step * (i - 1):step * i] = user_set[0].demand_curve(user_set[0].prices) * np.repeat(user_set[0].click_vs_bid(bids[i - 1]), step)
+            self.means_C2[step * (i - 1):step * i] = user_set[1].demand_curve(user_set[1].prices) * np.repeat(user_set[1].click_vs_bid(bids[i - 1]), step)
+            self.means_C3[step * (i - 1):step * i] = user_set[2].demand_curve(user_set[2].prices) * np.repeat(user_set[2].click_vs_bid(bids[i - 1]), step)
         self.sigmas = np.ones(len(actions)) * sigma
 
     def assess_user_type(self,user):

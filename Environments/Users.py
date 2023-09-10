@@ -14,8 +14,8 @@ class User(ABC):
     :probabilities: set of probabilities for each price for the specific class of user
     """
     def __init__(self, f1_value, f2_value, probabilities):
-        self._f1_value = f1_value
-        self._f2_value = f2_value
+        self.f1_value = f1_value
+        self.f2_value = f2_value
         self._probabilities = probabilities
         self._curve_params = None
         self._min_price = 150
@@ -59,7 +59,8 @@ class User(ABC):
         self._curve_params = params
         return
 
-    def demand_curve(self, price):
+
+    def demand_curve(self,price):
         """
         Method used to evaluate the demand curve for the specific class of user
         """
