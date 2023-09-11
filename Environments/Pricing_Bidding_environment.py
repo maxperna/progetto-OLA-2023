@@ -13,7 +13,7 @@ class PricingBiddingEnvironment():
         step=int(actions.shape[0]/len(bids))
         self.means=[]
         for i in range(1,len(bids)+1):
-            self.means[step*(i-1):step*i] = (user.prices - production_cost) * user.demand_curve(user.prices) * np.repeat(user.click_vs_bid(bids[i-1]),step) - np.repeat(user.cumulative_cost_vs_bid(bids[i-1]),step)
+            self.means[step*(i-1):step*i] = (user.prices - production_cost) * user.demand_curve(user.prices) * np.repeat(user.click_vs_bid(bids[i-1]),step) - np.repeat(user.cumulative_cost_vs_bid(bids[i-1])*user.click_vs_bid(bids[i-1]),step)
         self.sigmas = np.ones(len(actions)) * sigma
         production_cost = production_cost
 

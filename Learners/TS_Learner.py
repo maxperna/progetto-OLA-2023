@@ -23,11 +23,12 @@ class TS_Learner(Learner):
     """
     Method to call update methods of superclass Learner
     """
-    def update(self,pulled_arm,reward, price):
+    def update(self, pulled_arm, reward, price):
         # Increase time
         self.t += 1
-        gain = (price-self.production_cost)*reward*self.n_clicks - self.cumulative_cost
+        #gain = (price-self.production_cost)*reward*self.n_clicks - self.cumulative_cost
+        gain = (price-self.production_cost)*reward*self.n_clicks - self.cumulative_cost*self.n_clicks
         self.update_observations(pulled_arm, gain) # TODO update with reward*price
         # Update parameters
-        self.beta_param[pulled_arm,0] = self.beta_param[pulled_arm,0] + reward
-        self.beta_param[pulled_arm,1] = self.beta_param[pulled_arm,1] + 1.0 - reward
+        self.beta_param[pulled_arm,0] = self.beta_param[pulled_arm,0] + reward # ho sostituito reward con gain
+        self.beta_param[pulled_arm,1] = self.beta_param[pulled_arm,1] + 1.0 - reward # come riga sopra

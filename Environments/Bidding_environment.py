@@ -8,7 +8,7 @@ class BiddingEnvironment():
 
         # Assignments and Initializations
         self.bids = bids
-        self.means = margin*rate*user.click_vs_bid(bids) - user.cumulative_cost_vs_bid(bids)  # real function
+        self.means = margin*rate*user.click_vs_bid(bids) - user.cumulative_cost_vs_bid(bids)*user.click_vs_bid(bids)  # real function
         self.sigmas = np.ones(len(bids)) * sigma
 
     def round(self, pulled_arm):

@@ -21,7 +21,8 @@ class Greedy_Learner (Learner):
     
     def update (self, pulled_arm, reward, price):
         self.t += 1
-        gain = (price-self.production_cost)*reward*self.n_clicks - self.cumulative_cost
+        #gain = (price-self.production_cost)*reward*self.n_clicks - self.cumulative_cost
+        gain = (price-self.production_cost)*reward*self.n_clicks - self.cumulative_cost*self.n_clicks
         self.update_observations(pulled_arm, gain)   # update with reward*price
         self.expected_rewards[pulled_arm] = (self.expected_rewards[pulled_arm] * (self.t - 1) + gain) / self.t
     

@@ -11,5 +11,7 @@ class Environment:
 
     def round(self, pulled_arm):
         # Observation are communicated at the end of the day for all the customers
-        reward = np.random.binomial(1, self.user.probabilities[pulled_arm])
+        selected_bid = 0.5
+        n_clicks = self.user.click_vs_bid(selected_bid)
+        reward = np.random.binomial(n_clicks, self.user.probabilities[pulled_arm])/n_clicks
         return reward

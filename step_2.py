@@ -51,15 +51,26 @@ for e in range(0, n_experiments):
     gpucb1_rewards_per_experiment.append(gpucb1_learner.collected_rewards)
 
 # %% Compute the regret
-# opt = np.max(env.means)
+opt = np.max(env.means)
 # opt = np.max([np.max(gpts_rewards_per_experiment,axis=1), np.max(gpucb1_rewards_per_experiment, axis=1)])
-opt = np.array(120)
+#opt = np.array(120)
 avg_regret_gpts = np.mean(opt - gpts_rewards_per_experiment, axis=0)
 cum_regret_gpts = np.cumsum(avg_regret_gpts)
 std_regret_gpts = np.std(opt - gpts_rewards_per_experiment, axis=0)
 avg_regret_gpucb1 = np.mean(opt - gpucb1_rewards_per_experiment, axis=0)
 cum_regret_gpucb1 = np.cumsum(avg_regret_gpucb1)
 std_regret_gpucb1 = np.std(opt - gpucb1_rewards_per_experiment, axis=0)
+
+# %%
+print(opt)
+
+print(np.shape(gpucb1_rewards_per_experiment))
+print(gpucb1_rewards_per_experiment[0])
+
+aux = opt - gpucb1_rewards_per_experiment
+print(np.shape(aux))
+
+print(aux)
 
 # %% Plot the cumulative regret
 fig = plt.figure(0)
@@ -142,4 +153,5 @@ plt.fill_between(range(len(avg_cum_regret_ts)), avg_cum_regret_ts - std_cum_regr
 plt.legend(["Greedy", "UCB1", "TS"])
 plt.title("Cumulative Regret with standard deviation")
 plt.show()
+
 # %%

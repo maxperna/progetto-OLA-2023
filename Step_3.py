@@ -58,6 +58,17 @@ avg_regret_gpucb1 = np.mean(opt - gpucb1_rewards_per_experiment, axis=0)
 cum_regret_gpucb1 = np.cumsum(avg_regret_gpucb1)
 std_regret_gpucb1 = np.std(opt - gpucb1_rewards_per_experiment, axis=0)
 
+
+# %%
+print(opt)
+
+print(np.shape(gpucb1_rewards_per_experiment))
+print(gpucb1_rewards_per_experiment[0])
+
+aux = opt - gpucb1_rewards_per_experiment
+print(np.shape(aux))
+
+print(aux)
 # %% Plot the cumulative regret
 fig = plt.figure(0)
 plt.xlabel("t")

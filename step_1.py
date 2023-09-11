@@ -22,7 +22,7 @@ production_cost = 75
 
 avg_n_users = 1     # for future optimization
 #opt = max(Collector.prices * Collector.probabilities) * avg_n_users
-opt = max((Collector.prices-production_cost)*Collector.probabilities*n_clicks - cumulative_cost)
+opt = max((Collector.prices-production_cost)*Collector.probabilities*n_clicks - cumulative_cost*n_clicks)
 
 T = 365
 
@@ -66,6 +66,18 @@ std_regret_gr = np.std(opt - gr_rewards_per_experiment, axis=0)
 std_regret_ucb1 = np.std(opt - ucb1_rewards_per_experiment, axis=0)
 std_regret_ts = np.std(opt - ts_rewards_per_experiment, axis=0)
 
+
+# %%
+# solo per capire cosa sta succedendo
+print(opt)
+
+print(np.shape(ucb1_rewards_per_experiment))
+print(ucb1_rewards_per_experiment[0])
+
+aux = opt - ucb1_rewards_per_experiment
+print(np.shape(aux))
+
+print(aux)
 
 # %% Plot the cumulative regret
 plt.figure(0)
