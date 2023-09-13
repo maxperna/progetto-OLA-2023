@@ -55,17 +55,17 @@ for e in range(0, n_experiments):
 
 # %% Compute the regret
 opt = np.max(env.means)
-regret_gpts = opt - gpts_rewards_per_experiment  # row = exp, col = t
-avg_regret_gpts = np.mean(regret_gpts, axis=0)
-std_regret_gpts = np.std(regret_gpts, axis=0)
-cum_avg_regret_gpts = np.mean(np.cumsum(regret_gpts, axis=1), axis=0)
-cum_std_regret_gpts = np.std(np.cumsum(regret_gpts, axis=1), axis=0)
-
 regret_gpucb1 = opt - gpucb1_rewards_per_experiment  # row = exp, col = t
 avg_regret_gpucb1 = np.mean(regret_gpucb1, axis=0)
 std_regret_gpucb1 = np.std(regret_gpucb1, axis=0)
 cum_avg_regret_gpucb1 = np.mean(np.cumsum(regret_gpucb1, axis=1), axis=0)
 cum_std_regret_gpucb1 = np.std(np.cumsum(regret_gpucb1, axis=1), axis=0)
+
+regret_gpts = opt - gpts_rewards_per_experiment  # row = exp, col = t
+avg_regret_gpts = np.mean(regret_gpts, axis=0)
+std_regret_gpts = np.std(regret_gpts, axis=0)
+cum_avg_regret_gpts = np.mean(np.cumsum(regret_gpts, axis=1), axis=0)
+cum_std_regret_gpts = np.std(np.cumsum(regret_gpts, axis=1), axis=0)
 
 # %% Plot the cumulative regret
 fig = plt.figure(0)
@@ -99,15 +99,15 @@ plt.show()
 fig.savefig("results/S2_instantaneous_regret.png")
 
 # %% Compute the reward
-avg_reward_gpts = np.mean(gpts_rewards_per_experiment, axis=0)
-std_reward_gpts = np.std(gpts_rewards_per_experiment, axis=0)
-cum_avg_reward_gpts = np.mean(np.cumsum(gpts_rewards_per_experiment, axis=1), axis=0)
-cum_std_rreward_gpts = np.std(np.cumsum(gpts_rewards_per_experiment, axis=1), axis=0)
-
 avg_reward_gpucb1 = np.mean(gpucb1_rewards_per_experiment, axis=0)
 std_reward_gpucb1 = np.std(gpucb1_rewards_per_experiment, axis=0)
 cum_avg_reward_gpucb1 = np.mean(np.cumsum(gpucb1_rewards_per_experiment, axis=1), axis=0)
 cum_std_reward_gpucb1 = np.std(np.cumsum(gpucb1_rewards_per_experiment, axis=1), axis=0)
+
+avg_reward_gpts = np.mean(gpts_rewards_per_experiment, axis=0)
+std_reward_gpts = np.std(gpts_rewards_per_experiment, axis=0)
+cum_avg_reward_gpts = np.mean(np.cumsum(gpts_rewards_per_experiment, axis=1), axis=0)
+cum_std_rreward_gpts = np.std(np.cumsum(gpts_rewards_per_experiment, axis=1), axis=0)
 
 # %% Plot the cumulative reward
 plt.figure(2)

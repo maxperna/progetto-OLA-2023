@@ -20,6 +20,7 @@ class User(ABC):
         self._max_price = 350
         self._prices = np.linspace(self._min_price, self._max_price, len(self._probabilities))
         self._std_noise = 5
+        self._reward_of_prices = self._prices * self._probabilities
 
     @property
     def probabilities(self):
@@ -36,6 +37,10 @@ class User(ABC):
     @property
     def min_price(self):
         return self._min_price
+    
+    @property
+    def reward_of_prices(self):
+        return self._reward_of_prices
     
     ############################
     #      Demand curve        #
