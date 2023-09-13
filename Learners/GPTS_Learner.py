@@ -18,11 +18,11 @@ class GPTS_Learner(Learner):
         self.sigmas = np.ones(self.n_arms) * 10.0
         self.pulled_arms = []
         alpha = 0.5  # alpha
-
         # The kernel is set as the product of a constant and a Radial-basis with values 1 and range 1e-3 to 1e3
         theta = 1.0
         l = 1.0
         kernel = C(theta, (1e-3, 1e3)) * RBF(l, (1e-3, 1e3))
+        # kernel = C(theta, constant_value_bounds="fixed") * RBF(l, length_scale_bounds="fixed") # This works way better
         n_restarts = 9
 
         # Sets the Gaussian Process Regressor from the given kernel
