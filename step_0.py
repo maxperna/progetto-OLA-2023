@@ -13,7 +13,7 @@ Parent = UserC2()
 Young = UserC3()
 
 # %% Plot the demand curves for the three classes of users
-fig = plt.figure()
+fig = plt.figure(facecolor='white')
 Collector.plot_demand_curve()
 Parent.plot_demand_curve()
 Young.plot_demand_curve()
@@ -25,7 +25,7 @@ plt.show()
 fig.savefig("results/S0_conversion_rates.png")
 
 # %% Plot the expected rewards for the three classes of users
-fig = plt.figure()
+fig = plt.figure(facecolor='white')
 Collector.plot_expected_reward()
 Parent.plot_expected_reward()
 Young.plot_expected_reward()
@@ -37,7 +37,7 @@ plt.show()
 fig.savefig("results/S0_expected_gain.png")
 
 # %% Plot the click vs bid curves for the three classes of users
-fig = plt.figure()
+fig = plt.figure(facecolor='white')
 Collector.plot_click_vs_bid()
 Parent.plot_click_vs_bid()
 Young.plot_click_vs_bid()
@@ -49,7 +49,7 @@ plt.show()
 fig.savefig("results/S0_click_vs_bid.png")
 
 # %% Plot the cumulative cost vs bid curves for the three classes of users
-fig = plt.figure()
+fig = plt.figure(facecolor='white')
 Collector.plot_cost_vs_bid()
 Parent.plot_cost_vs_bid()
 Young.plot_cost_vs_bid()
