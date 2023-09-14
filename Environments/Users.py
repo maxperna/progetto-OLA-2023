@@ -197,7 +197,7 @@ class UserC1(User):
         return (1 - np.exp(- 8.0 * bid - 0.5 * bid**2))  * 70
 
     def cost_vs_bid(self, bid):
-        return 1.9*np.log(1+bid/1.9) # S
+        return 1.4*np.log(1+bid/1.7)
         #return 100 * (1-np.exp(-2*bid+bid**3))
 
     
@@ -215,7 +215,7 @@ class UserC2(User):
         return (1 - np.exp(-1.5 * bid + -1 * bid**2)) * 100
 
     def cost_vs_bid(self, bid):
-        return 1.7*np.log(1+bid/1.8)
+        return 1.9*np.log(1+bid/1.9) 
     
 
 class UserC3(User):
@@ -233,5 +233,5 @@ class UserC3(User):
         return (1 - np.exp(-1 * bid -0.9 * bid**2)) * 90
 
     def cost_vs_bid(self, bid):
-        return 1.4*np.log(1+bid/1.7)
+        return 1.7*np.log(1+bid/1.8)
     

@@ -16,7 +16,7 @@ class Environment:
     def round(self, pulled_arm):
         # Observation are communicated at the end of the day for all the customers
         reward = np.random.binomial(self.n_clicks, self.user.probabilities[pulled_arm])/self.n_clicks
-        return reward
+        return reward 
     
     def max_reward(self):
         # Return the maximum reward given the selected bid
