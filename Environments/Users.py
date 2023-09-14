@@ -73,6 +73,12 @@ class User(ABC):
         if self._curve_params is None:
             self.fit_demand_curve()
         return self.base_function(price, *self._curve_params)
+    
+    def generate_conversion_rate(self, price):
+        """
+        Method used to generate the noisy conversion rate for the specific class of user
+        """
+        return self.demand_curve(price) + np.random.normal(0, self._std_noise, size = self.demand_curve(price).shape)
 
     def plot_demand_curve(self):
         """
@@ -181,6 +187,19 @@ class User(ABC):
         # plt.ylim(0, 1)
         plt.title('Noisy Cost vs Bid Curve for user class')
         return plt.plot(bids, noisy_cost, "o")
+    
+    def plot_avg_cumulative_daily_cost_click_bid(self):
+        """
+        Method used to plot the average cumulative daily cost vs bid curve for the specific class of user
+        """
+        bids = np.linspace(self._min_bid, self._max_bid, 100)
+        avg_cumulative_daily_cost = self.cost_vs_bid(bids) * self.click_vs_bid(bids)
+        plt.xlabel('Bid')
+        plt.ylabel('Average cumulative daily cost of clicks')
+        plt.xlim(0, 1)
+        # plt.ylim(0, 1)
+        plt.title('Average cumulative daily cost vs Bid Curve for user class')
+        return plt.plot(bids, avg_cumulative_daily_cost)
 
 
 

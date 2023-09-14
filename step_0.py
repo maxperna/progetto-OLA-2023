@@ -61,4 +61,17 @@ plt.show()
 
 fig.savefig("results/S0_cost_vs_bid.png")
 
+# %% Plot the cumulative cost vs bid curves for the three classes of users
+fig = plt.figure(facecolor='white')
+Collector.plot_avg_cumulative_daily_cost_click_bid()
+Parent.plot_avg_cumulative_daily_cost_click_bid()
+Young.plot_avg_cumulative_daily_cost_click_bid()
+plt.legend(['Collector', 'Parent', 'Young'])
+plt.title("Average Cumulative daily Cost of Clicks vs Bid Curves")
+fig = plt.gcf()
+plt.show()
+
+fig.savefig("results/S0_avg_cumulative_cost_vs_bid.png")
+
+
 # %%
