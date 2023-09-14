@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from Environments.Users import  UserC1, UserC2, UserC3
-from Environments.Environment import Environment
+from Environments.Environment_S1 import Environment
 from Learners.TS_Learner import TS_Learner
 from Learners.Greedy_Learner import Greedy_Learner
 from Learners.UCB1_Learner import UCB1_Learner

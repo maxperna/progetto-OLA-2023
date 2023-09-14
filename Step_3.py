@@ -2,7 +2,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from Environments.Pricing_Bidding_environment import PricingBiddingEnvironment
+from Environments.Environment_S3 import PricingBiddingEnvironment
 from Environments.Users import UserC1
 from Learners.GPTS_Learner_s3 import GPTS_Learner
 from Learners.GPUCB1_Learner_s3 import GPUCB1_Learner

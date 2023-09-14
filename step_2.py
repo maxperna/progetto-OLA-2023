@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from Environments.Users import  UserC1, UserC2, UserC3
-from Environments.Bidding_environment import BiddingEnvironment
+from Environments.Environment_S2 import BiddingEnvironment
 from Learners.GPTS_Learner import GPTS_Learner
 from Learners.GPUCB1_Learner import GPUCB1_Learner
 

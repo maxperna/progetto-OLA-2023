@@ -14,13 +14,17 @@ class User(ABC):
     def __init__(self, f1_value, f2_value, probabilities):
         self._f1_value = f1_value
         self._f2_value = f2_value
+        # Pricing parameters
         self._probabilities = probabilities
         self._curve_params = None
         self._min_price = 150
         self._max_price = 350
         self._prices = np.linspace(self._min_price, self._max_price, len(self._probabilities))
-        self._std_noise = 5
+        self._std_noise = 10  # std of the gaussian noise
         self._reward_of_prices = self._prices * self._probabilities
+        # Advertising parameters
+        self._min_bid = 0.0
+        self._max_bid = 1.0
 
     @property
     def probabilities(self):
@@ -94,7 +98,7 @@ class User(ABC):
         plt.ylabel('Expected reward')
         plt.xlim(self._min_price, self._max_price)
         plt.ylim(0, self._max_price)
-        plt.title('Expected reward for user class')
+        plt.title('Expected reward for prices by user class')
         return plt.plot(prices, expected_reward)
     
     ############################
@@ -108,38 +112,75 @@ class User(ABC):
         """
         pass 
 
-    def generate_observations(self, bid):
+    @abstractmethod
+    def cumulative_cost_vs_bid(self, bid):
         """
-        Method used to generate observations for the specific class of user with noise
+        Method used to evaluate the cumulative cost for the specific class of user
         """
-        # TODO pass noise as parameter
+        pass
+
+    def generate_click_bid_observations(self, bid):
+        """
+        Method used to generate noisy observations of click vs bid for the specific class of user
+        """
         return self.click_vs_bid(bid) + np.random.normal(0, self._std_noise, size = self.click_vs_bid(bid).shape)
+
+    def generate_cumulative_cost_bid_observations(self, bid):
+        """
+        Method used to generate noisy observations of click vs bid for the specific class of user
+        """
+        return self.cumulative_cost_vs_bid(bid) + np.random.normal(0, self._std_noise, size = self.cumulative_cost_vs_bid(bid).shape)
 
     def plot_click_vs_bid(self):
         """
         Method used to plot the click vs bid curve for the specific class of user
         """
-        bids = np.linspace(0, 1, 100)
+        bids = np.linspace(self._min_bid, self._max_bid, 100)
         clicks = self.click_vs_bid(bids)
         plt.xlabel('Bid')
         plt.ylabel('Click')
-        plt.xlim(0, 1)
-        # plt.ylim(0, 1)
+        plt.xlim(self._min_bid, self._max_bid)
         plt.title('Click vs Bid Curve for user class')
         return plt.plot(bids, clicks)
     
-    def plot_noisy_curve(self):
+    def plot_cumulative_cost_vs_bid(self):
+        """
+        Method used to plot the cumulative cost vs bid curve for the specific class of user
+        """
+        bids = np.linspace(self._min_bid, self._max_bid, 100)
+        cumulative_cost = self.cumulative_cost_vs_bid(bids)
+        plt.xlabel('Bid')
+        plt.ylabel('Cumulative Cost')
+        plt.xlim(0, 1)
+        # plt.ylim(0, 1)
+        plt.title('Cumulative Cost vs Bid Curve for user class')
+        return plt.plot(bids, cumulative_cost)
+    
+    def plot_noisy_click_vs_bid(self):
         """
         Method used to plot the click vs bid curve for the specific class of user with noise
         """
-        bids = np.linspace(0, 1, 100)
-        noisy_clicks = self.generate_observations(bids)
+        bids = np.linspace(self._min_bid, self._max_bid, 100)
+        noisy_clicks = self.generate_click_bid_observations(bids)
         plt.xlabel('Bid')
         plt.ylabel('Click')
         plt.xlim(0, 1)
         # plt.ylim(0, 1)
         plt.title('Noisy Click vs Bid Curve for user class')
         return plt.plot(bids, noisy_clicks, "o")
+    
+    def plot_noisy_cumulative_cost_vs_bid(self):
+        """
+        Method used to plot the cumulative cost vs bid curve for the specific class of user with noise
+        """
+        bids = np.linspace(self._min_bid, self._max_bid, 100)
+        noisy_cumulative_cost = self.generate_cumulative_cost_bid_observations(bids)
+        plt.xlabel('Bid')
+        plt.ylabel('Cumulative Cost')
+        plt.xlim(0, 1)
+        # plt.ylim(0, 1)
+        plt.title('Noisy Cumulative Cost vs Bid Curve for user class')
+        return plt.plot(bids, noisy_cumulative_cost, "o")
 
 
 
@@ -153,10 +194,10 @@ class UserC1(User):
         super().__init__(True, True, np.array([0.3, 0.5, 0.85, 0.8, 0.7]))
 
     def click_vs_bid(self, bid):
-        return (1 - np.exp(- 5.0 * bid))  * 100
+        return (1 - np.exp(- 3.0 * bid - 0.5 * bid**2))  * 70
 
     def cumulative_cost_vs_bid(self, bid):
-        return 1.5*2*np.log(1+bid/2) # S
+        return 1.9*np.log(1+bid/1.9) # S
         #return 100 * (1-np.exp(-2*bid+bid**3))
 
     
@@ -171,8 +212,10 @@ class UserC2(User):
         super().__init__(True, False, probabilities)
 
     def click_vs_bid(self, bid):
-        # TODO
-        pass
+        return (1 - np.exp(-1.5 * bid + -1 * bid**2)) * 100
+
+    def cumulative_cost_vs_bid(self, bid):
+        return 1.7*np.log(1+bid/1.8)
     
 
 class UserC3(User):
@@ -187,6 +230,8 @@ class UserC3(User):
         super().__init__(feature1, feature2, probabilities)
     
     def click_vs_bid(self, bid):
-        # TODO
-        pass
+        return (1 - np.exp(-1 * bid -0.9 * bid**2)) * 90
+
+    def cumulative_cost_vs_bid(self, bid):
+        return 1.4*np.log(1+bid/1.7)
     
