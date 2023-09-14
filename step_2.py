@@ -31,7 +31,7 @@ Collector = UserC1()
 selected_price = 300
 #conversion_rate = np.max(Collector.demand_curve())
 conversion_rate = Collector.demand_curve(selected_price)
-production_cost = 75
+production_cost = 100
 margin = selected_price - production_cost
 
 # %% Run the experiments
