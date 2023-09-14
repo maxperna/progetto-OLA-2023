@@ -50,11 +50,11 @@ class User(ABC):
     #      Demand curve        #
     ############################
 
-    def concave_function(self, x, a, b, c, d):
+    def base_function(self, x, a, b, c, d):
         """
         Function used to fit the demand curve
         """
-        return a + b * x + c * x**2
+        return a + b * x + c * x**2 + d * x**3 # + np.exp(d * x)
 
     def fit_demand_curve(self):
         """
@@ -62,7 +62,7 @@ class User(ABC):
         """
         x_val = np.linspace(self._min_price, self._max_price, len(self._probabilities)).astype(np.float32)
         y_val = self._probabilities
-        params, _ = curve_fit(self.concave_function, x_val, y_val)
+        params, _ = curve_fit(self.base_function, x_val, y_val)
         self._curve_params = params
         return
 
@@ -72,7 +72,7 @@ class User(ABC):
         """
         if self._curve_params is None:
             self.fit_demand_curve()
-        return self.concave_function(price, *self._curve_params)
+        return self.base_function(price, *self._curve_params)
 
     def plot_demand_curve(self):
         """
@@ -191,10 +191,10 @@ class UserC1(User):
     """
 
     def __init__(self):
-        super().__init__(True, True, np.array([0.9, 0.7, 0.85, 0.8, 0.7]))
+        super().__init__(True, True, np.array([0.5, 0.7, 0.7, 0.6, 0.3]))
 
     def click_vs_bid(self, bid):
-        return (1 - np.exp(- 3.0 * bid - 0.5 * bid**2))  * 70
+        return (1 - np.exp(- 8.0 * bid - 0.5 * bid**2))  * 70
 
     def cost_vs_bid(self, bid):
         return 1.9*np.log(1+bid/1.9) # S
@@ -208,7 +208,7 @@ class UserC2(User):
     Parent User
     """
     def __init__(self):
-        probabilities = np.array([0.3, 0.5, 0.7, 0.85, 0.8])
+        probabilities = np.array([0.7, 0.65, 0.6, 0.4, 0.1])
         super().__init__(True, False, probabilities)
 
     def click_vs_bid(self, bid):
@@ -226,7 +226,7 @@ class UserC3(User):
     def __init__(self):
         feature1 = False
         feature2 = np.random.choice([True, False])
-        probabilities = np.array([0.7, 0.8, 0.7, 0.5, 0.3])
+        probabilities = np.array([0.6, 0.55, 0.3, 0.2, 0.1])
         super().__init__(feature1, feature2, probabilities)
     
     def click_vs_bid(self, bid):
