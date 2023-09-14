@@ -187,7 +187,7 @@ class User(ABC):
         # plt.ylim(0, 1)
         plt.title('Noisy Cost vs Bid Curve for user class')
         return plt.plot(bids, noisy_cost, "o")
-    
+        
     def plot_avg_cumulative_daily_cost_click_bid(self):
         """
         Method used to plot the average cumulative daily cost vs bid curve for the specific class of user
@@ -201,6 +201,18 @@ class User(ABC):
         plt.title('Average cumulative daily cost vs Bid Curve for user class')
         return plt.plot(bids, avg_cumulative_daily_cost)
 
+    def optimizer(self, production_cost, bids, prices):
+        max_bid = 0
+        max_price = 0
+        opt = 0
+        for i in bids:
+            for j in prices:
+                aux = self.click_vs_bid(i)*[self.demand_curve(j)*(j-production_cost) - self.cost_vs_bid(i)]
+                if (aux > opt):
+                    max_bid = i
+                    max_price = j
+                    opt = aux
+        return [max_bid, max_price, opt]
 
 
 class UserC1(User):
