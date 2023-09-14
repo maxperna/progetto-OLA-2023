@@ -50,15 +50,15 @@ fig.savefig("results/S0_click_vs_bid.png")
 
 # %% Plot the cumulative cost vs bid curves for the three classes of users
 fig = plt.figure()
-Collector.plot_cumulative_cost_vs_bid()
-Parent.plot_cumulative_cost_vs_bid()
-Young.plot_cumulative_cost_vs_bid()
+Collector.plot_cost_vs_bid()
+Parent.plot_cost_vs_bid()
+Young.plot_cost_vs_bid()
 # plt.plot([0, 1], [0, 1], 'k--')  # Check that the cumulative cost is always lower or equal than the bid (second price auction)
 plt.legend(['Collector', 'Parent', 'Young'])
-plt.title("Cumulative Cost vs Bid Curves")
+plt.title("Cost vs Bid Curves")
 fig = plt.gcf()
 plt.show()
 
-fig.savefig("results/S0_cumulative_cost_vs_bid.png")
+fig.savefig("results/S0_cost_vs_bid.png")
 
 # %%

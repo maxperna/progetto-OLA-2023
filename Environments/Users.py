@@ -113,9 +113,9 @@ class User(ABC):
         pass 
 
     @abstractmethod
-    def cumulative_cost_vs_bid(self, bid):
+    def cost_vs_bid(self, bid):
         """
-        Method used to evaluate the cumulative cost for the specific class of user
+        Method used to evaluate the cost for the specific class of user
         """
         pass
 
@@ -125,11 +125,11 @@ class User(ABC):
         """
         return self.click_vs_bid(bid) + np.random.normal(0, self._std_noise, size = self.click_vs_bid(bid).shape)
 
-    def generate_cumulative_cost_bid_observations(self, bid):
+    def generate_cost_bid_observations(self, bid):
         """
         Method used to generate noisy observations of click vs bid for the specific class of user
         """
-        return self.cumulative_cost_vs_bid(bid) + np.random.normal(0, self._std_noise, size = self.cumulative_cost_vs_bid(bid).shape)
+        return self.cost_vs_bid(bid) + np.random.normal(0, self._std_noise, size = self.cost_vs_bid(bid).shape)
 
     def plot_click_vs_bid(self):
         """
@@ -143,18 +143,18 @@ class User(ABC):
         plt.title('Click vs Bid Curve for user class')
         return plt.plot(bids, clicks)
     
-    def plot_cumulative_cost_vs_bid(self):
+    def plot_cost_vs_bid(self):
         """
-        Method used to plot the cumulative cost vs bid curve for the specific class of user
+        Method used to plot the cost vs bid curve for the specific class of user
         """
         bids = np.linspace(self._min_bid, self._max_bid, 100)
-        cumulative_cost = self.cumulative_cost_vs_bid(bids)
+        cost = self.cost_vs_bid(bids)
         plt.xlabel('Bid')
-        plt.ylabel('Cumulative Cost')
+        plt.ylabel('Cost')
         plt.xlim(0, 1)
         # plt.ylim(0, 1)
-        plt.title('Cumulative Cost vs Bid Curve for user class')
-        return plt.plot(bids, cumulative_cost)
+        plt.title('Cost vs Bid Curve for user class')
+        return plt.plot(bids, cost)
     
     def plot_noisy_click_vs_bid(self):
         """
@@ -169,18 +169,18 @@ class User(ABC):
         plt.title('Noisy Click vs Bid Curve for user class')
         return plt.plot(bids, noisy_clicks, "o")
     
-    def plot_noisy_cumulative_cost_vs_bid(self):
+    def plot_noisy_cost_vs_bid(self):
         """
-        Method used to plot the cumulative cost vs bid curve for the specific class of user with noise
+        Method used to plot the cost vs bid curve for the specific class of user with noise
         """
         bids = np.linspace(self._min_bid, self._max_bid, 100)
-        noisy_cumulative_cost = self.generate_cumulative_cost_bid_observations(bids)
+        noisy_cost = self.generate_cost_bid_observations(bids)
         plt.xlabel('Bid')
-        plt.ylabel('Cumulative Cost')
+        plt.ylabel('Cost')
         plt.xlim(0, 1)
         # plt.ylim(0, 1)
-        plt.title('Noisy Cumulative Cost vs Bid Curve for user class')
-        return plt.plot(bids, noisy_cumulative_cost, "o")
+        plt.title('Noisy Cost vs Bid Curve for user class')
+        return plt.plot(bids, noisy_cost, "o")
 
 
 
@@ -191,12 +191,12 @@ class UserC1(User):
     """
 
     def __init__(self):
-        super().__init__(True, True, np.array([0.3, 0.5, 0.85, 0.8, 0.7]))
+        super().__init__(True, True, np.array([0.9, 0.7, 0.85, 0.8, 0.7]))
 
     def click_vs_bid(self, bid):
         return (1 - np.exp(- 3.0 * bid - 0.5 * bid**2))  * 70
 
-    def cumulative_cost_vs_bid(self, bid):
+    def cost_vs_bid(self, bid):
         return 1.9*np.log(1+bid/1.9) # S
         #return 100 * (1-np.exp(-2*bid+bid**3))
 
@@ -214,7 +214,7 @@ class UserC2(User):
     def click_vs_bid(self, bid):
         return (1 - np.exp(-1.5 * bid + -1 * bid**2)) * 100
 
-    def cumulative_cost_vs_bid(self, bid):
+    def cost_vs_bid(self, bid):
         return 1.7*np.log(1+bid/1.8)
     
 
@@ -232,6 +232,6 @@ class UserC3(User):
     def click_vs_bid(self, bid):
         return (1 - np.exp(-1 * bid -0.9 * bid**2)) * 90
 
-    def cumulative_cost_vs_bid(self, bid):
+    def cost_vs_bid(self, bid):
         return 1.4*np.log(1+bid/1.7)
     

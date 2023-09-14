@@ -17,7 +17,7 @@ selected_bid = 0.5
 #n_clicks = np.max(Collector.click_vs_bid())
 #cumulative_cost=Collector.cumulative_cost_vs_bid(selected_bid)
 n_clicks = Collector.click_vs_bid(selected_bid)
-cumulative_cost=Collector.cumulative_cost_vs_bid(selected_bid)
+cumulative_cost=Collector.cost_vs_bid(selected_bid)
 production_cost = 75
 
 avg_n_users = 1     # for future optimization
