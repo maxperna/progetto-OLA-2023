@@ -1,6 +1,4 @@
 import numpy as np
-from Environments.Users import UserC1,UserC2,UserC3
-
 
 class ContextEnvironment():
     def __init__(self,actions,bids,sigma,user_set):
@@ -10,37 +8,31 @@ class ContextEnvironment():
 
         # Assignments and Initializations
         self.actions = actions
+        self.customers = user_set
+        self.means=[]
+
         step = int(actions.shape[0] / len(bids))
-        self.means_C1 = []
-        self.means_C2 = []
-        self.means_C3 = []
-        for i in range(1, len(bids) + 1):
-            self.means_C1[step * (i - 1):step * i] = user_set[0].demand_curve(user_set[0].prices) * np.repeat(user_set[0].click_vs_bid(bids[i - 1]), step)
-            self.means_C2[step * (i - 1):step * i] = user_set[1].demand_curve(user_set[1].prices) * np.repeat(user_set[1].click_vs_bid(bids[i - 1]), step)
-            self.means_C3[step * (i - 1):step * i] = user_set[2].demand_curve(user_set[2].prices) * np.repeat(user_set[2].click_vs_bid(bids[i - 1]), step)
+        for user in user_set:
+            tmp = []
+            for i in range(1, len(bids) + 1):
+                tmp[step * (i - 1):step * i] = user.demand_curve(user.prices) * np.repeat(user.click_vs_bid(bids[i - 1]), step)
+            self.means.append(tmp)
+
         self.sigmas = np.ones(len(actions)) * sigma
+        self._current_feature = None
+        self._customer_id = None
 
-    def assess_user_type(self,user):
-        """
-        Method used to assess the type of user and return the right means depending on the relative demand curve
-        """
-        if user.f1_value:
-            if user.f2_value:
-                return "C1"
-            else:
-                return "C2"
-        else:
-            return "C3"
+    def get_current_features(self):
+        customer_type = np.random.choice(range(len(self.customers)))
+        self._customer_id = customer_type
+        self._current_feature = self.customers[customer_type].get_features
+        return self._current_feature
 
 
-    def round(self, pulled_arm,user):
+    def round(self, pulled_arm):
         '''Simulate the current round of pricing and bidding with the given pulled arm. Returns the realization
         of a random normal with set mean and std.'''
-        if(self.assess_user_type(user)=="C1"):
-            reward = np.random.normal(self.means_C1[pulled_arm], self.sigmas[pulled_arm])
-        if(self.assess_user_type(user)=="C2"):
-            reward = np.random.normal(self.means_C2[pulled_arm], self.sigmas[pulled_arm])
-        else:
-            reward = np.random.normal(self.means_C3[pulled_arm], self.sigmas[pulled_arm])
+        #Select a random customer from a uniform distribution
+        reward = np.random.normal(self.means[self._customer_id][pulled_arm], self.sigmas[pulled_arm])
 
         return reward
