@@ -101,9 +101,10 @@ class GPUCB1_Contextual(Learner):
         self.rewards_per_context = []
         self.pulled_arms_context = []
 
-        contexts_number = len(context)
         if self.context is None:
             contexts_number = 1
+        else:
+            contexts_number = len(context)
         for i in range(contexts_number):
             self.rewards_per_context.append([])
             self.pulled_arms_context.append([])

@@ -24,6 +24,8 @@ class Context():
                 tmp.append(user.get_features)
             features_map.append(tmp)    #created a map of feature for each context
 
+        if self._current_split[0] and self._current_split[1]:
+            return False
         feature_subset_1 = []
         feature_subset_2 = []
         new_context = []
@@ -41,25 +43,31 @@ class Context():
 
 
                 #Created the feature subset to split on
-                result = self.evaluate(learner,feature_subset_1,feature_subset_2)
+                result = self.evaluate_splitting(learner,feature_subset_1,feature_subset_2)
 
                 if result:
                     new_context = [feature_subset_1,feature_subset_2]
                 else:
                     break
 
-    
+        final_context = {}
+        for i,subcontext in enumerate(new_context):
+            key = "Split" + str(i)
+            final_context[key] = []
+            for features in subcontext:
+                user = self.assess_user_type(features[0],feature[1])
+                final_context[key] = final_context[key].append(user)
 
-        pass
+        return final_context
     def evaluate_splitting(self,learner: Learner,feature1,feature2):
         """
         Method used to evaluate the splitting of the users
         """
-        total_reward = np.array(learner.collected_rewards)
-        pulled_features = np.array(learner.features)
+        total_reward = learner.collected_rewards
+        pulled_features = learner.features
         #Get the indices of the splitting features
-        indices_f1 = [index for index, value in enumerate(pulled_features) if value in feature1]
-        indices_f2 = [index for index, value in enumerate(pulled_features) if value in feature2]
+        indices_f1 = [index for index, value in enumerate(pulled_features) if any(value == feature for feature in feature1)]
+        indices_f2 = [index for index, value in enumerate(pulled_features) if any(value == feature for feature in feature2)]
 
         reward_f1 = total_reward[indices_f1]
         reward_f2 = total_reward[indices_f2]
@@ -82,3 +90,14 @@ class Context():
             valid = True
         return valid
 
+    def assess_user_type(self,f1_value,f2_value):
+        """
+        Method used to assess the type of user and return the right means depending on the relative demand curve
+        """
+        if f1_value:
+            if f2_value:
+                return UserC1()
+            else:
+                return UserC2()
+        else:
+            return UserC3()

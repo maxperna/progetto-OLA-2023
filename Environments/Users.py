@@ -152,7 +152,7 @@ class UserC1(User):
     """
 
     def __init__(self):
-        super().__init__(True, True, np.array(config["purchase_probabilities"]["userC1"]))
+        super().__init__(1, 1, np.array(config["purchase_probabilities"]["userC1"]))
 
     def click_vs_bid(self, bid):
         return (1 - np.exp(- 5.0 * bid))  * 100
@@ -170,7 +170,7 @@ class UserC2(User):
     """
     def __init__(self):
         probabilities = np.array(config["purchase_probabilities"]["userC2"])
-        super().__init__(True, False, probabilities)
+        super().__init__(1, 0, probabilities)
 
     def click_vs_bid(self, bid):
         # TODO
@@ -184,8 +184,8 @@ class UserC3(User):
     Young User
     """
     def __init__(self):
-        feature_1 = False
-        feature_2 = np.random.choice([True, False])
+        feature_1 = 0
+        feature_2 = 1
         probabilities = np.array(config["purchase_probabilities"]["userC3"])
         super().__init__(feature_1, feature_2, probabilities)
     

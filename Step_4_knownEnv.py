@@ -90,7 +90,7 @@ plt.legend(["GP-UCB1", "GP-TS"])
 fig = plt.gcf()
 plt.show()
 
-fig.savefig("results/Step4_known/S4_cumulative_regret.png")
+fig.savefig("results/Step4_unknown/S4_cumulative_regret.png")
 
 # %% Plot the instantaneous regret
 fig = plt.figure(1)
@@ -105,7 +105,7 @@ plt.legend(["GP-UCB1", "GP-TS"])
 fig = plt.gcf()
 plt.show()
 
-fig.savefig("results/Step4_known/S4_instantaneous_regret.png")
+fig.savefig("results/Step4_unknown/S4_instantaneous_regret.png")
 
 # %% Plot the cumulative reward
 plt.figure(1)
@@ -117,7 +117,7 @@ plt.legend(["GP-UCB1", "GP-TS"])
 plt.title("Cumulative Reward")
 plt.show()
 
-fig.savefig("results/Step4_known/S4_cumulative_reward.png")
+fig.savefig("results/Step4_unknown/S4_cumulative_reward.png")
 # %% Plot the instantaneous reward
 plt.figure(3)
 plt.xlabel("t")
@@ -129,7 +129,7 @@ plt.legend(["GP-UCB1", "GP-TS", "Clairvoyant"])
 plt.title("Instantaneous Reward")
 plt.show()
 
-fig.savefig("results/Step4_known/S4_instantaneous_reward.png")
+fig.savefig("results/Step4_unknown/S4_instantaneous_reward.png")
 # %% Plot the instantaneous regret with standard deviation
 plt.figure(4)
 plt.xlabel("t")
@@ -143,7 +143,7 @@ plt.legend(["GP-UCB1", "GP-TS", "Clairvoyant"])
 plt.title("Instantaneous Regret with Standard Deviation")
 plt.show()
 
-fig.savefig("results/Step4_known/S4_istantaneous_regret_std.png")
+fig.savefig("results/Step4_unknown/S4_istantaneous_regret_std.png")
 # %% Plot of cumulative regret with variance
 avg_cum_regret_ucb1 = np.cumsum(avg_regret_gpucb1)
 avg_cum_regret_ts = np.cumsum(avg_regret_gpts)
@@ -162,4 +162,4 @@ plt.legend(["GP-UCB1", "GP-TS"])
 plt.title("Cumulative Regret with standard deviation")
 plt.show()
 
-fig.savefig("results/Step4_known/S4_cumulative_regret_std.png")
+fig.savefig("results/Step4_unknown/S4_cumulative_regret_std.png")
