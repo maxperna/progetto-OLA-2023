@@ -8,11 +8,11 @@ class ContextEnvironment():
 
         # Assignments and Initializations
         self.actions = actions
-        self.customers = user_set
+        self.customers = [item for sublist in list(user_set.values()) for item in sublist]
         self.means=[]
 
         step = int(actions.shape[0] / len(bids))
-        for user in user_set:
+        for user in self.customers:
             tmp = []
             for i in range(1, len(bids) + 1):
                 tmp[step * (i - 1):step * i] = user.demand_curve(user.prices) * np.repeat(user.click_vs_bid(bids[i - 1]), step)

@@ -8,6 +8,10 @@ class GPUCB1_Contextual(Learner):
     Contextual GPUCB implementation
     """
     def __init__(self, n_arms, bids, M,context):
+        """
+        Context = None if no context is given
+        """
+
         super().__init__(n_arms)
         self.arms = bids
         self.means = np.zeros(self.n_arms)
@@ -94,7 +98,13 @@ class GPUCB1_Contextual(Learner):
 
     def update_context(self,context):
         self.context = context
-        for customer in context:
+        self.rewards_per_context = []
+        self.pulled_arms_context = []
+
+        contexts_number = len(context)
+        if self.context is None:
+            contexts_number = 1
+        for i in range(contexts_number):
             self.rewards_per_context.append([])
             self.pulled_arms_context.append([])
             self.rewards_per_context.append([])
@@ -103,7 +113,11 @@ class GPUCB1_Contextual(Learner):
         """
         Method used to return the index for a right update of the context
         """
-        for customer in self.context:
-            if customer.get_features == features:
-                return self.context.index(customer)
+        if self.context is None:
+            return 0
+        else:
+            for split in self.context.keys():
+                for customer in self.context[split]:
+                    if customer.get_features == features:
+                        return list(self.context.keys()).index(split)
         return -1

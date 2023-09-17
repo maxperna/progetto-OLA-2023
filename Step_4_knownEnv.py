@@ -20,8 +20,8 @@ Collector_2 = UserC2()
 Collector_3 = UserC3()
 
 print(Collector_1.get_features)
-
-user_set = (Collector_1,Collector_2,Collector_3)
+#Express context as a dict in which each split is a set of customer
+context = {"Split1":[Collector_1],"Split2":[Collector_2],"Split3":[Collector_3]}
 
 prices = Collector_1.prices
 
@@ -45,10 +45,10 @@ number_of_c3 = 0    #number of C3 users
 
 # %% Run the experiments
 for e in range(0, n_experiments):
-    env = ContextEnvironment(actions=action_space, bids=bids, sigma = sigma,user_set=user_set)
+    env = ContextEnvironment(actions=action_space, bids=bids, sigma = sigma, user_set=context)
 
-    gpts_learner = GPTS_Contextual(n_arms = n_arms, bids = action_space,context =user_set)
-    gpucb1_learner = GPUCB1_Contextual(n_arms = n_arms, bids = action_space, M = np.max(action_space[:,0]*action_space[:,1]),context = user_set)
+    gpts_learner = GPTS_Contextual(n_arms = n_arms, bids = action_space, context =context)
+    gpucb1_learner = GPUCB1_Contextual(n_arms = n_arms, bids = action_space, M = np.max(action_space[:,0]*action_space[:,1]), context = context)
 
 
     for t in range(0, T):
