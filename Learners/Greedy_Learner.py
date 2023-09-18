@@ -1,11 +1,11 @@
 from Learners.Learner import *
 
 class Greedy_Learner (Learner):
-    def __init__(self, n_arms, production_cost, n_clicks, cumulative_cost):
+    def __init__(self, n_arms, production_cost, n_clicks, cost_of_click):
         super().__init__(n_arms)
         self.production_cost = production_cost
         self.n_clicks = n_clicks
-        self.cumulative_cost = cumulative_cost
+        self.cost_of_click = cost_of_click
     
         self.expected_rewards = np.zeros(n_arms)
 
@@ -21,8 +21,7 @@ class Greedy_Learner (Learner):
     
     def update (self, pulled_arm, reward, price):
         self.t += 1
-        #gain = (price-self.production_cost)*reward*self.n_clicks - self.cumulative_cost
-        gain = (price-self.production_cost)*reward*self.n_clicks - self.cumulative_cost*self.n_clicks
-        self.update_observations(pulled_arm, gain)   # update with reward*price
+        gain = (price-self.production_cost)*reward - self.cost_of_click*self.n_clicks
+        self.update_observations(pulled_arm, gain)  
         self.expected_rewards[pulled_arm] = (self.expected_rewards[pulled_arm] * (self.t - 1) + gain) / self.t
     
