@@ -7,28 +7,26 @@ from Environments.Environment_S2 import BiddingEnvironment
 from Learners.GPTS_Learner import GPTS_Learner
 from Learners.GPUCB1_Learner import GPUCB1_Learner
 
-from param import production_cost, min_bid, max_bid, T, n_experiments_S2
+from param import production_cost, min_bid, max_bid, T, n_experiments_S2, n_arms_bidding
 
 # %% Parameters
-n_arms = 100  # number of possible bids
 Collector = UserC1()
-bids = np.linspace(min_bid, max_bid, n_arms)
+bids = np.linspace(min_bid, max_bid, n_arms_bidding)
 
 gpts_rewards_per_experiment = []
 gpucb1_rewards_per_experiment = []
 
-best_price = Collector.clairvoyant(production_cost)[0]
+best_price = Collector.clairvoyant()[0]
 conversion_rate = Collector.probabilities[np.where(Collector.prices == best_price)][0]
 
 margin = best_price - production_cost
 
 
-
 # %% Run the experiments
 for e in range(0, n_experiments_S2):
     env = BiddingEnvironment(bids=bids, margin = margin, rate = conversion_rate, user=UserC1())
-    gpucb1_learner = GPUCB1_Learner(n_arms = n_arms, bids = bids, M = max_bid)
-    gpts_learner = GPTS_Learner(n_arms = n_arms, bids = bids)
+    gpucb1_learner = GPUCB1_Learner(n_arms = n_arms_bidding, bids = bids, M = max_bid)
+    gpts_learner = GPTS_Learner(n_arms = n_arms_bidding, bids = bids)
     for t in range(0, T):
         # GP UCB1 Learner
         pulled_arm = gpucb1_learner.pull_arm()
@@ -105,8 +103,8 @@ plt.xlabel("t")
 plt.ylabel("Reward")
 plt.plot(cum_avg_reward_gpucb1, 'b')
 plt.plot(cum_avg_reward_gpts, 'r')
-plt.fill_between(range(len(cum_avg_reward_gpucb1)), cum_avg_reward_gpucb1 - cum_std_reward_gpucb1, cum_avg_reward_gpucb1 + cum_std_reward_gpucb1, alpha=0.2, color='r')
-plt.fill_between(range(len(cum_avg_reward_gpts)), cum_avg_reward_gpts - cum_std_rreward_gpts, cum_avg_reward_gpts + cum_std_rreward_gpts, alpha=0.2, color='b')
+plt.fill_between(range(len(cum_avg_reward_gpucb1)), cum_avg_reward_gpucb1 - cum_std_reward_gpucb1, cum_avg_reward_gpucb1 + cum_std_reward_gpucb1, alpha=0.2, color='b')
+plt.fill_between(range(len(cum_avg_reward_gpts)), cum_avg_reward_gpts - cum_std_rreward_gpts, cum_avg_reward_gpts + cum_std_rreward_gpts, alpha=0.2, color='r')
 plt.legend(["GP-UCB1", "GP-TS"])
 plt.title("Cumulative Reward")
 fig = plt.gcf()

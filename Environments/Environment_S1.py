@@ -4,7 +4,7 @@ from Environments.Users import *
 
 class Environment:
     
-    def __init__(self, n_arms = 5, user = UserC1(), selected_bid = 0.5, production_cost = 100):
+    def __init__(self,  selected_bid, production_cost, n_arms = 5, user = UserC1()):
         self.n_arms = n_arms  # 5 prices
         self.user = user
         self.n_clicks = self.user.click_vs_bid(selected_bid)  # Use the known curve

@@ -2,18 +2,18 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from Environments.Users import  UserC1, UserC2, UserC3
+from Environments.Users import  UserC1
 from Environments.Environment_S1 import Environment
 from Learners.TS_Learner import TS_Learner
 from Learners.Greedy_Learner import Greedy_Learner
 from Learners.UCB1_Learner import UCB1_Learner
 
-from param import min_bid, max_bid, n_arms_pricing, T, n_experiments_S1, production_cost
+from param import n_arms_pricing, T, n_experiments_S1, production_cost
 
 # %% Create user
-Collector = UserC1(min_bid = min_bid, max_bid = max_bid)
+Collector = UserC1()
 
-optimum  = Collector.clairvoyant(production_cost=production_cost)
+optimum  = Collector.clairvoyant()
 
 selected_bid = optimum[1]
 n_clicks = Collector.click_vs_bid(selected_bid)
@@ -27,7 +27,7 @@ ts_rewards_per_experiment = []
 for e in range(0, n_experiments_S1):
     env = Environment(n_arms=n_arms_pricing, user=Collector, selected_bid=selected_bid, production_cost=production_cost)
     gr_learner = Greedy_Learner(n_arms=n_arms_pricing, production_cost=production_cost, n_clicks=n_clicks, cost_of_click=cost_of_click)
-    ucb1_learner = UCB1_Learner(n_arms=n_arms_pricing, production_cost=production_cost, n_clicks=n_clicks, cost_of_click=cost_of_click, M = Collector._max_price-production_cost)
+    ucb1_learner = UCB1_Learner(n_arms=n_arms_pricing, production_cost=production_cost, n_clicks=n_clicks, cost_of_click=cost_of_click, M = optimum[2])
     ts_learner = TS_Learner(n_arms=n_arms_pricing, production_cost=production_cost, n_clicks=n_clicks, cost_of_click=cost_of_click)
     for t in range(0, T):
         # Greedy Learner
@@ -132,8 +132,8 @@ plt.ylabel("Reward")
 plt.plot(cum_avg_reward_ucb1, 'b')
 plt.plot(cum_avg_reward_ts, 'r')
 # plt.fill_between(range(len(cum_avg_reward_greedy)), cum_avg_reward_greedy - cum_std_rreward_greedy, cum_avg_reward_greedy + cum_std_rreward_greedy, alpha=0.2, color='g')
-plt.fill_between(range(len(cum_avg_reward_ucb1)), cum_avg_reward_ucb1 - cum_std_reward_ucb1, cum_avg_reward_ucb1 + cum_std_reward_ucb1, alpha=0.2, color='r')
-plt.fill_between(range(len(cum_avg_reward_ts)), cum_avg_reward_ts - cum_std_rreward_ts, cum_avg_reward_ts + cum_std_rreward_ts, alpha=0.2, color='b')
+plt.fill_between(range(len(cum_avg_reward_ucb1)), cum_avg_reward_ucb1 - cum_std_reward_ucb1, cum_avg_reward_ucb1 + cum_std_reward_ucb1, alpha=0.2, color='b')
+plt.fill_between(range(len(cum_avg_reward_ts)), cum_avg_reward_ts - cum_std_rreward_ts, cum_avg_reward_ts + cum_std_rreward_ts, alpha=0.2, color='r')
 plt.legend(["UCB1", "TS"]) # "Greedy",
 plt.title("Cumulative Reward")
 fig = plt.gcf()
