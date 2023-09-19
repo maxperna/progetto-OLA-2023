@@ -3,6 +3,7 @@ from sklearn.gaussian_process import GaussianProcessRegressor
 from sklearn.gaussian_process.kernels import RBF, ConstantKernel as C
 from Learners.Learner import Learner
 
+from param import sigma_gp
 
 class GPUCB1_Learner(Learner):
     """
@@ -13,12 +14,14 @@ class GPUCB1_Learner(Learner):
         super().__init__(n_arms)
         self.arms = bids
         self.means = np.zeros(self.n_arms)
-        self.sigmas = np.ones(self.n_arms) * 10.0
+        self.sigmas = np.ones(self.n_arms) * sigma_gp
         self.pulled_arms = []
         self.M = M
         alpha = .5
         theta = 1.0
         l = 1.0
+
+        # kernel = C(theta, (1e-3, 1e3)) * RBF(l, (1e-3, 1e3))
         kernel = C(theta, constant_value_bounds="fixed") * RBF(l, length_scale_bounds="fixed")
         n_restarts = 9
 
@@ -40,21 +43,10 @@ class GPUCB1_Learner(Learner):
         """
         This method update internal model retraining the GP and predicting again the values for every arm
         """
-        # Prepare X, y for GP
-        #x = np.atleast_2d(self.pulled_arms).T
         x = np.atleast_2d(self.pulled_arms)
-        #x=np.array(self.pulled_arms)
         y = self.collected_rewards
-
-        # Retrain the GP
         self.gp.fit(x, y)
-
-        # Retrieve predictions from GP
-        #self.means, self.sigmas = self.gp.predict(np.atleast_2d(self.arms).T, return_std=True)
         self.means, self.sigmas = self.gp.predict(np.atleast_2d(self.arms), return_std=True)
-        #self.means, self.sigmas = self.gp.predict(np.array(self.arms), return_std=True)
-
-        # sigma lower bound
         self.sigmas = np.maximum(self.sigmas, 1e-2)
 
         return
@@ -71,10 +63,7 @@ class GPUCB1_Learner(Learner):
 
     def pull_arm(self):
 
-        if self.t < self.n_arms:
-            return self.t # TODO: check this
-        else:
-            beta = np.sqrt(2*np.log2(self.n_arms*(self.t+1)*(self.t+1)*np.pi*np.pi/(6*0.05))) # TODO WTF is this
-            upper_bounds = self.means + beta * self.sigmas
+        beta = np.sqrt(2*np.log2(self.n_arms*(self.t+1)*(self.t+1)*np.pi*np.pi/(6*0.05))) 
+        upper_bounds = self.means + beta * self.sigmas
 
         return np.argmax(upper_bounds)

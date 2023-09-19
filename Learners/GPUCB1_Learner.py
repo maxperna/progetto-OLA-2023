@@ -17,9 +17,11 @@ class GPUCB1_Learner(Learner):
         self.pulled_arms = []
         self.M = M
         alpha = .5
+
         theta = 1.0
         l = 1.0
-        kernel = C(theta, constant_value_bounds="fixed") * RBF(l, length_scale_bounds="fixed")
+        # kernel = C(theta, (1e-3, 1e3)) * RBF(l, (1e-3, 1e3))
+        kernel = C(theta, constant_value_bounds="fixed") * RBF(l, length_scale_bounds="fixed") # This works way better
         n_restarts = 9
 
         self.gp = GaussianProcessRegressor(
@@ -68,10 +70,7 @@ class GPUCB1_Learner(Learner):
 
     def pull_arm(self):
 
-        if self.t < self.n_arms:
-            return self.t # TODO: check this
-        else:
-            beta = np.sqrt(2*np.log2(self.n_arms*(self.t+1)*(self.t+1)*np.pi*np.pi/(6*0.05))) # TODO WTF is this
-            upper_bounds = self.means + beta * self.sigmas
+        beta = np.sqrt(2*np.log2(self.n_arms*(self.t+1)*(self.t+1)*np.pi*np.pi/(6*0.05))) 
+        upper_bounds = self.means + beta * self.sigmas
 
         return np.argmax(upper_bounds)

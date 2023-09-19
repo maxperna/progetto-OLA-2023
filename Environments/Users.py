@@ -3,6 +3,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
 
+from param import min_bid, max_bid, min_price, max_price, production_cost
+from param import std_noise_pricing, std_noise_cost, std_noise_click
+from param import p1_stationary, p2_stationary, p3_stationary, max_conversion_rate
 
 class User(ABC):
     """
@@ -14,13 +17,21 @@ class User(ABC):
     def __init__(self, f1_value, f2_value, probabilities):
         self._f1_value = f1_value
         self._f2_value = f2_value
+        self.production_cost = production_cost
+        # Pricing parameters
         self._probabilities = probabilities
         self._curve_params = None
-        self._min_price = 150
-        self._max_price = 350
+        self._min_price = min_price
+        self._max_price = max_price
         self._prices = np.linspace(self._min_price, self._max_price, len(self._probabilities))
-        self._std_noise = 5
-
+        self._std_noise_pricing = std_noise_pricing  # std of the gaussian noise
+        self._reward_of_prices = self._prices * self._probabilities
+        # Advertising parameters
+        self._min_bid = min_bid
+        self._max_bid = max_bid
+        self._std_noise_cost = std_noise_cost       
+        self._std_noise_click = std_noise_click
+        
     @property
     def probabilities(self):
         return self._probabilities
@@ -37,15 +48,19 @@ class User(ABC):
     def min_price(self):
         return self._min_price
     
+    @property
+    def reward_of_prices(self):
+        return self._reward_of_prices
+    
     ############################
     #      Demand curve        #
     ############################
 
-    def concave_function(self, x, a, b, c, d):
+    def base_function(self, x, a, b, c, d):
         """
         Function used to fit the demand curve
         """
-        return a + b * x + c * x**2
+        return a + b * x + c * x**2 + d * x**3 # + np.exp(d * x)
 
     def fit_demand_curve(self):
         """
@@ -53,7 +68,7 @@ class User(ABC):
         """
         x_val = np.linspace(self._min_price, self._max_price, len(self._probabilities)).astype(np.float32)
         y_val = self._probabilities
-        params, _ = curve_fit(self.concave_function, x_val, y_val)
+        params, _ = curve_fit(self.base_function, x_val, y_val)
         self._curve_params = params
         return
 
@@ -63,7 +78,13 @@ class User(ABC):
         """
         if self._curve_params is None:
             self.fit_demand_curve()
-        return self.concave_function(price, *self._curve_params)
+        return self.base_function(price, *self._curve_params)
+    
+    def generate_conversion_rate(self, price):
+        """
+        Method used to generate the noisy conversion rate for the specific class of user
+        """
+        return self.demand_curve(price) + np.random.normal(0, self._std_noise_pricing, size = self.demand_curve(price).shape)
 
     def plot_demand_curve(self):
         """
@@ -74,11 +95,11 @@ class User(ABC):
         plt.xlabel('Price')
         plt.ylabel('Demand')
         plt.xlim(self._min_price, self._max_price)
-        plt.ylim(0, 1)
+        plt.ylim(0, max_conversion_rate)
         plt.title('Conversion Rate Curve for user class')
         return plt.plot(prices, demand)  # lable=self.__class__.__name__
 
-    def plot_expected_reward(self):
+    def plot_expected_pricing_gain(self):
         """
         Method used to plot the expected reward for the specific class of user
         """
@@ -89,7 +110,7 @@ class User(ABC):
         plt.ylabel('Expected reward')
         plt.xlim(self._min_price, self._max_price)
         plt.ylim(0, self._max_price)
-        plt.title('Expected reward for user class')
+        plt.title('Expected reward for prices by user class')
         return plt.plot(prices, expected_reward)
     
     ############################
@@ -103,55 +124,139 @@ class User(ABC):
         """
         pass 
 
-    def generate_observations(self, bid):
+    @abstractmethod
+    def cost_vs_bid(self, bid):
         """
-        Method used to generate observations for the specific class of user with noise
+        Method used to evaluate the cost for the specific class of user
         """
-        # TODO pass noise as parameter
-        return self.click_vs_bid(bid) + np.random.normal(0, self._std_noise, size = self.click_vs_bid(bid).shape)
+        pass
+
+    def generate_click_bid_observations(self, bid):
+        """
+        Method used to generate noisy observations of click vs bid for the specific class of user
+        """
+        return self.click_vs_bid(bid) + np.random.normal(0, self._std_noise_click, size = self.click_vs_bid(bid).shape)
+
+    def generate_cost_bid_observations(self, bid):
+        """
+        Method used to generate noisy observations of click vs bid for the specific class of user
+        """
+        return self.cost_vs_bid(bid) + np.random.normal(0, self._std_noise_cost, size = self.cost_vs_bid(bid).shape)
 
     def plot_click_vs_bid(self):
         """
         Method used to plot the click vs bid curve for the specific class of user
         """
-        bids = np.linspace(0, 1, 100)
+        bids = np.linspace(self._min_bid, self._max_bid, 100)
         clicks = self.click_vs_bid(bids)
         plt.xlabel('Bid')
         plt.ylabel('Click')
-        plt.xlim(0, 1)
-        # plt.ylim(0, 1)
+        plt.xlim(self._min_bid, self._max_bid)
         plt.title('Click vs Bid Curve for user class')
         return plt.plot(bids, clicks)
     
-    def plot_noisy_curve(self):
+    def plot_cost_vs_bid(self):
+        """
+        Method used to plot the cost vs bid curve for the specific class of user
+        """
+        bids = np.linspace(self._min_bid, self._max_bid, 100)
+        cost = self.cost_vs_bid(bids)
+        plt.xlabel('Bid')
+        plt.ylabel('Cost')
+        plt.xlim(self._min_bid, self._max_bid)
+        plt.title('Cost vs Bid Curve for user class')
+        return plt.plot(bids, cost)
+    
+    def plot_noisy_click_vs_bid(self):
         """
         Method used to plot the click vs bid curve for the specific class of user with noise
         """
-        bids = np.linspace(0, 1, 100)
-        noisy_clicks = self.generate_observations(bids)
+        bids = np.linspace(self._min_bid, self._max_bid, 100)
+        noisy_clicks = self.generate_click_bid_observations(bids)
         plt.xlabel('Bid')
         plt.ylabel('Click')
-        plt.xlim(0, 1)
-        # plt.ylim(0, 1)
+        plt.xlim(self._min_bid, self._max_bid)
         plt.title('Noisy Click vs Bid Curve for user class')
         return plt.plot(bids, noisy_clicks, "o")
+    
+    def plot_noisy_cost_vs_bid(self):
+        """
+        Method used to plot the cost vs bid curve for the specific class of user with noise
+        """
+        bids = np.linspace(self._min_bid, self._max_bid, 100)
+        noisy_cost = self.generate_cost_bid_observations(bids)
+        plt.xlabel('Bid')
+        plt.ylabel('Cost')
+        plt.xlim(self._min_bid, self._max_bid)
+        plt.title('Noisy Cost vs Bid Curve for user class')
+        return plt.plot(bids, noisy_cost, "o")
+        
+    def plot_avg_cumulative_daily_cost_click_bid(self):
+        """
+        Method used to plot the average cumulative daily cost vs bid curve for the specific class of user
+        """
+        bids = np.linspace(self._min_bid, self._max_bid, 100)
+        avg_cumulative_daily_cost = self.cost_vs_bid(bids) * self.click_vs_bid(bids)
+        plt.xlabel('Bid')
+        plt.ylabel('Average cumulative daily cost of clicks')
+        plt.xlim(self._min_bid, self._max_bid)
+        plt.title('Average cumulative daily cost vs Bid Curve for user class')
+        return plt.plot(bids, avg_cumulative_daily_cost)
 
-
+    ############################
+    #    Clairvoyant method    #
+    ############################
+    
+    def clairvoyant(self):
+        best_bid = 0
+        best_price = 0
+        opt = 0
+        bids = np.linspace(self._min_bid, self._max_bid, 100)
+        for i in bids:
+            for id_j, j in enumerate(self._prices):
+                aux = self.click_vs_bid(i) * (self.probabilities[id_j]*(j-self.production_cost) - self.cost_vs_bid(i))
+                if (aux > opt):
+                    best_bid = i
+                    best_price = j
+                    opt = aux
+        return [best_price, best_bid, opt]
+    
+    def general_reward(self, price, bid, production_cost):
+        return self.click_vs_bid(bid) * (self.demand_curve(price)*(price-production_cost) - self.cost_vs_bid(bid))
+    
+    def plot_general_reward(self):
+        plt.figure(facecolor='white')
+        prices = np.linspace(self._min_price, self._max_price, 200)
+        bids = np.linspace(self._min_bid, self._max_bid, 200)
+        reward = np.zeros((len(prices), len(bids)))
+        for id_i, i in enumerate(prices):
+            for id_j, j in enumerate(bids):
+                reward[id_j, id_i] = self.general_reward(price=i, bid=j, production_cost= self.production_cost)
+        plt.xlabel('Price')
+        plt.ylabel('Bid')
+        plt.xlim(self._min_price, self._max_price)
+        plt.ylim(self._min_bid, self._max_bid)
+        plt.title('General reward for user class')
+        plt.contourf(prices, bids, reward, 100)
+        plt.colorbar()
+        return
 
 class UserC1(User):
     """
     User class C1
-    Collcetor User
+    Collector User
     """
 
     def __init__(self):
-        super().__init__(True, True, np.array([0.3, 0.5, 0.85, 0.8, 0.7]))
+        super().__init__(True, True, p1_stationary)
 
     def click_vs_bid(self, bid):
-        return (1 - np.exp(- 5.0 * bid))  * 100
-
-    def cumulative_cost_vs_bid(self, bid):
-        return 100 * (1-np.exp(-2*bid+bid**3))
+        bid = (bid - self._min_bid) / (self._max_bid - self._min_bid)
+        return (1 - np.exp(- 8.0 * bid - 0.5 * bid**2)) * 70 # return number of clicks
+        
+    def cost_vs_bid(self, bid):
+        bid = (bid - self._min_bid) / (self._max_bid - self._min_bid)
+        return 1.4*np.log(1+bid/1.7) * (self._max_bid - self._min_bid) + self._min_bid  # return cost of the click
 
     
 
@@ -161,12 +266,16 @@ class UserC2(User):
     Parent User
     """
     def __init__(self):
-        probabilities = np.array([0.3, 0.5, 0.7, 0.85, 0.8])
+        probabilities = p2_stationary
         super().__init__(True, False, probabilities)
 
     def click_vs_bid(self, bid):
-        # TODO
-        pass
+        bid = (bid - self._min_bid) / (self._max_bid - self._min_bid)
+        return (1 - np.exp(-1.5 * bid + -1 * bid**2)) * 100
+
+    def cost_vs_bid(self, bid):
+        bid = (bid - self._min_bid) / (self._max_bid - self._min_bid)
+        return 1.9*np.log(1+bid/1.9) * (self._max_bid - self._min_bid) + self._min_bid 
     
 
 class UserC3(User):
@@ -177,10 +286,14 @@ class UserC3(User):
     def __init__(self):
         feature1 = False
         feature2 = np.random.choice([True, False])
-        probabilities = np.array([0.7, 0.8, 0.7, 0.5, 0.3])
+        probabilities = p3_stationary
         super().__init__(feature1, feature2, probabilities)
     
     def click_vs_bid(self, bid):
-        # TODO
-        pass
+        bid = (bid - self._min_bid) / (self._max_bid - self._min_bid)
+        return (1 - np.exp(-1 * bid -0.9 * bid**2)) * 90 
+
+    def cost_vs_bid(self, bid):
+        bid = (bid - self._min_bid) / (self._max_bid - self._min_bid)
+        return 1.7*np.log(1+bid/1.8) * (self._max_bid - self._min_bid) + self._min_bid 
     
