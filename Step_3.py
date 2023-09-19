@@ -7,35 +7,31 @@ from Environments.Users import UserC1
 from Learners.GPTS_Learner_s3 import GPTS_Learner
 from Learners.GPUCB1_Learner_s3 import GPUCB1_Learner
 
+from param import n_arms_bidding, min_bid, max_bid, T, n_experiments_S3, production_cost, std_noise_general
+
 # %% Parameters
-n_bids = 100
-min_bid = 0.0
-max_bid = 1.0
-bids = np.linspace(min_bid, max_bid, n_bids)
-sigma = 10  # Noise of the environment TODO consider using %
+bids = np.linspace(min_bid, max_bid, n_arms_bidding)
 
 Collector = UserC1()
 prices = Collector.prices
-sigma = 10
 
-production_cost = 100
+best_price = Collector.clairvoyant()[0]
+conversion_rate = Collector.probabilities[np.where(Collector.prices == best_price)][0]
+
+margin = best_price - production_cost
 
 # Generate an action space with both bids and prices
 action_space = np.array([[bid,price] for bid in bids for price in prices]) # all combinations of bid and price
 n_arms = action_space.shape[0]
 
-T = 60 #365
-
-n_experiments = 20 #4
 gpts_rewards_per_experiment = []
 gpucb1_rewards_per_experiment = []
-#bids_made_per_experiment = [] #the bids made by the learner
 
 # %% Run the experiments
-for e in range(0, n_experiments):
-    env = PricingBiddingEnvironment(actions=action_space, sigma = sigma, bids=bids, user=UserC1(), production_cost=production_cost)
+for e in range(0, n_experiments_S3):
+    env = PricingBiddingEnvironment(actions=action_space, sigma = std_noise_general, bids=bids, user=UserC1(), production_cost=production_cost)
     gpts_learner = GPTS_Learner(n_arms = n_arms, bids = action_space)
-    gpucb1_learner = GPUCB1_Learner(n_arms = n_arms, bids = action_space, M = np.max(action_space[:,0]*action_space[:,1]))
+    gpucb1_learner = GPUCB1_Learner(n_arms = n_arms, bids = action_space, M = Collector.clairvoyant()[2])
     for t in range(0, T):
         # GP UCB1 Learner
         pulled_arm = gpucb1_learner.pull_arm()
@@ -51,14 +47,6 @@ for e in range(0, n_experiments):
     gpucb1_rewards_per_experiment.append(gpucb1_learner.collected_rewards)
 
 # %% Compute the regret
-#opt = np.max(env.means)
-#avg_regret_gpts = np.mean(opt - gpts_rewards_per_experiment, axis=0)
-#cum_regret_gpts = np.cumsum(avg_regret_gpts)
-#std_regret_gpts = np.std(opt - gpts_rewards_per_experiment, axis=0)
-#avg_regret_gpucb1 = np.mean(opt - gpucb1_rewards_per_experiment, axis=0)
-#cum_regret_gpucb1 = np.cumsum(avg_regret_gpucb1)
-#std_regret_gpucb1 = np.std(opt - gpucb1_rewards_per_experiment, axis=0)
-
 opt = np.max(env.means)
 regret_gpucb1 = opt - gpucb1_rewards_per_experiment  # row = exp, col = t
 avg_regret_gpucb1 = np.mean(regret_gpucb1, axis=0)
@@ -71,18 +59,6 @@ avg_regret_gpts = np.mean(regret_gpts, axis=0)
 std_regret_gpts = np.std(regret_gpts, axis=0)
 cum_avg_regret_gpts = np.mean(np.cumsum(regret_gpts, axis=1), axis=0)
 cum_std_regret_gpts = np.std(np.cumsum(regret_gpts, axis=1), axis=0)
-
-# %%
-# help
-print(opt)
-
-print(np.shape(gpucb1_rewards_per_experiment))
-print(gpucb1_rewards_per_experiment[0])
-
-aux = opt - gpucb1_rewards_per_experiment
-print(np.shape(aux))
-
-print(aux)
 
 # %% Plot the cumulative regret
 fig = plt.figure(0)
@@ -132,8 +108,8 @@ plt.xlabel("t")
 plt.ylabel("Reward")
 plt.plot(cum_avg_reward_gpucb1, 'b')
 plt.plot(cum_avg_reward_gpts, 'r')
-plt.fill_between(range(len(cum_avg_reward_gpucb1)), cum_avg_reward_gpucb1 - cum_std_reward_gpucb1, cum_avg_reward_gpucb1 + cum_std_reward_gpucb1, alpha=0.2, color='r')
-plt.fill_between(range(len(cum_avg_reward_gpts)), cum_avg_reward_gpts - cum_std_rreward_gpts, cum_avg_reward_gpts + cum_std_rreward_gpts, alpha=0.2, color='b')
+plt.fill_between(range(len(cum_avg_reward_gpucb1)), cum_avg_reward_gpucb1 - cum_std_reward_gpucb1, cum_avg_reward_gpucb1 + cum_std_reward_gpucb1, alpha=0.2, color='b')
+plt.fill_between(range(len(cum_avg_reward_gpts)), cum_avg_reward_gpts - cum_std_rreward_gpts, cum_avg_reward_gpts + cum_std_rreward_gpts, alpha=0.2, color='r')
 plt.legend(["GP-UCB1", "GPTS"])
 plt.title("Cumulative Reward")
 fig = plt.gcf()

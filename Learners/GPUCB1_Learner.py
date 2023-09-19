@@ -70,9 +70,6 @@ class GPUCB1_Learner(Learner):
 
     def pull_arm(self):
 
-        # if self.t < self.n_arms:
-        #     return self.t 
-        # else:
         beta = np.sqrt(2*np.log2(self.n_arms*(self.t+1)*(self.t+1)*np.pi*np.pi/(6*0.05))) 
         upper_bounds = self.means + beta * self.sigmas
 

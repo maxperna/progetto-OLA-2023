@@ -28,10 +28,12 @@ n_arms_bidding = 100
 T = 365
 n_experiments_S1 = 10
 n_experiments_S2 = 5
+n_experiments_S3 = 5
 
 production_cost = 100
 
 std_noise_general = 10
+sigma_gp = 5
 
 ##################################################
 #                  Users parameters              #

@@ -3,6 +3,7 @@ from sklearn.gaussian_process import GaussianProcessRegressor
 from sklearn.gaussian_process.kernels import RBF, ConstantKernel as C
 from Learners.Learner import Learner
 
+from param import sigma_gp
 
 class GPTS_Learner(Learner):
     '''Gaussian Process Thompson Sampling Learner inheriting from the Learner class.'''
@@ -15,7 +16,7 @@ class GPTS_Learner(Learner):
         # Assignments and Initializations
         self.arms = bids
         self.means = np.zeros(self.n_arms)
-        self.sigmas = np.ones(self.n_arms) * 10.0
+        self.sigmas = np.ones(self.n_arms) * sigma_gp
         self.pulled_arms = []
         alpha = 0.5  # alpha
         theta = 1.0
