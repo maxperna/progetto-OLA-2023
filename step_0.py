@@ -77,15 +77,18 @@ fig.savefig("results/S0_avg_cumulative_cost_vs_bid.png")
 
 
 # %% Clairvoyant reward
-fig = Collector.plot_general_reward(production_cost)
+Collector.plot_general_reward()
+fig = plt.gcf()
 fig.savefig("results/S0_clairvoyant_reward_Collector.png")
 
 # %%
-fig = Parent.plot_general_reward(production_cost)
+Parent.plot_general_reward()
+fig = plt.gcf()
 fig.savefig("results/S0_clairvoyant_reward_Parent.png")
 
 # %%
-fig = Young.plot_general_reward(production_cost)
+fig = Young.plot_general_reward()
+fig = plt.gcf()
 fig.savefig("results/S0_clairvoyant_reward_Young.png")
 
 # %%
