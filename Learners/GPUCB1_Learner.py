@@ -20,8 +20,8 @@ class GPUCB1_Learner(Learner):
 
         theta = 1.0
         l = 1.0
-        kernel = C(theta, (1e-3, 1e3)) * RBF(l, (1e-3, 1e3))
-        # kernel = C(theta, constant_value_bounds="fixed") * RBF(l, length_scale_bounds="fixed") # This works way better
+        # kernel = C(theta, (1e-3, 1e3)) * RBF(l, (1e-3, 1e3))
+        kernel = C(theta, constant_value_bounds="fixed") * RBF(l, length_scale_bounds="fixed") # This works way better
         n_restarts = 9
 
         self.gp = GaussianProcessRegressor(

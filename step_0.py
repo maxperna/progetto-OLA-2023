@@ -7,6 +7,8 @@ import matplotlib.pyplot as plt
 
 from Environments.Users import  UserC1, UserC2, UserC3
 
+from param import production_cost
+
 # %% Create the three classes of users
 Collector = UserC1()
 Parent = UserC2()
@@ -26,9 +28,9 @@ fig.savefig("results/S0_conversion_rates.png")
 
 # %% Plot the expected rewards for the three classes of users
 fig = plt.figure(facecolor='white')
-Collector.plot_expected_reward()
-Parent.plot_expected_reward()
-Young.plot_expected_reward()
+Collector.plot_expected_pricing_gain()
+Parent.plot_expected_pricing_gain()
+Young.plot_expected_pricing_gain()
 plt.legend(['Collector', 'Parent', 'Young'])
 plt.title("Expected Rewards Curves")
 fig = plt.gcf()
@@ -73,5 +75,17 @@ plt.show()
 
 fig.savefig("results/S0_avg_cumulative_cost_vs_bid.png")
 
+
+# %% Clairvoyant reward
+fig = Collector.plot_general_reward(production_cost)
+fig.savefig("results/S0_clairvoyant_reward_Collector.png")
+
+# %%
+fig = Parent.plot_general_reward(production_cost)
+fig.savefig("results/S0_clairvoyant_reward_Parent.png")
+
+# %%
+fig = Young.plot_general_reward(production_cost)
+fig.savefig("results/S0_clairvoyant_reward_Young.png")
 
 # %%

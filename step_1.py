@@ -8,28 +8,27 @@ from Learners.TS_Learner import TS_Learner
 from Learners.Greedy_Learner import Greedy_Learner
 from Learners.UCB1_Learner import UCB1_Learner
 
+from param import min_bid, max_bid, n_arms_pricing, T, n_experiments_S1, production_cost
+
 # %% Create user
-n_arm = 5
-Collector = UserC1()
+Collector = UserC1(min_bid = min_bid, max_bid = max_bid)
 
-T = 365
-n_experiments = 20
+optimum  = Collector.clairvoyant(production_cost=production_cost)
 
-selected_bid = 0.5
+selected_bid = optimum[1]
 n_clicks = Collector.click_vs_bid(selected_bid)
 cost_of_click=Collector.cost_vs_bid(selected_bid)
-production_cost = 100
 
 gr_rewards_per_experiment = []
 ucb1_rewards_per_experiment = []
 ts_rewards_per_experiment = []
 
 # %% Run the experiments
-for e in range(0, n_experiments):
-    env = Environment(n_arms=n_arm, user=Collector, selected_bid=selected_bid, production_cost=production_cost)
-    gr_learner = Greedy_Learner(n_arms=n_arm, production_cost=production_cost, n_clicks=n_clicks, cost_of_click=cost_of_click)
-    ucb1_learner = UCB1_Learner(n_arms=n_arm, production_cost=production_cost, n_clicks=n_clicks, cost_of_click=cost_of_click, M = Collector._max_price-production_cost)
-    ts_learner = TS_Learner(n_arms=n_arm, production_cost=production_cost, n_clicks=n_clicks, cost_of_click=cost_of_click)
+for e in range(0, n_experiments_S1):
+    env = Environment(n_arms=n_arms_pricing, user=Collector, selected_bid=selected_bid, production_cost=production_cost)
+    gr_learner = Greedy_Learner(n_arms=n_arms_pricing, production_cost=production_cost, n_clicks=n_clicks, cost_of_click=cost_of_click)
+    ucb1_learner = UCB1_Learner(n_arms=n_arms_pricing, production_cost=production_cost, n_clicks=n_clicks, cost_of_click=cost_of_click, M = Collector._max_price-production_cost)
+    ts_learner = TS_Learner(n_arms=n_arms_pricing, production_cost=production_cost, n_clicks=n_clicks, cost_of_click=cost_of_click)
     for t in range(0, T):
         # Greedy Learner
         pulled_arm = gr_learner.pull_arm()
@@ -112,7 +111,7 @@ fig.savefig("results/S1_instantaneous_regret.png")
 avg_reward_greedy = np.mean(gr_rewards_per_experiment, axis=0)
 std_reward_greedy = np.std(gr_rewards_per_experiment, axis=0)
 cum_avg_reward_greedy = np.mean(np.cumsum(gr_rewards_per_experiment, axis=1), axis=0)
-cum_std_rreward_greedy = np.std(np.cumsum(gr_rewards_per_experiment, axis=1), axis=0)
+cum_std_reward_greedy = np.std(np.cumsum(gr_rewards_per_experiment, axis=1), axis=0)
 
 avg_reward_ucb1 = np.mean(ucb1_rewards_per_experiment, axis=0)
 std_reward_ucb1 = np.std(ucb1_rewards_per_experiment, axis=0)
