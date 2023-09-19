@@ -61,7 +61,7 @@ cum_avg_regret_gpts = np.mean(np.cumsum(regret_gpts, axis=1), axis=0)
 cum_std_regret_gpts = np.std(np.cumsum(regret_gpts, axis=1), axis=0)
 
 # %% Plot the cumulative regret
-fig = plt.figure(0)
+fig = plt.figure(0, facecolor='white')
 plt.xlabel("t")
 plt.ylabel("Regret")
 plt.plot(cum_avg_regret_gpucb1, 'b')
@@ -76,7 +76,7 @@ plt.show()
 fig.savefig("results/S3_cumulative_regret.png")
 
 # %% Plot the instantaneous regret
-fig = plt.figure(1)
+fig = plt.figure(1,facecolor='white')
 plt.xlabel("t")
 plt.ylabel("Regret")
 plt.plot(avg_regret_gpucb1, 'b')
@@ -103,7 +103,7 @@ cum_avg_reward_gpts = np.mean(np.cumsum(gpts_rewards_per_experiment, axis=1), ax
 cum_std_rreward_gpts = np.std(np.cumsum(gpts_rewards_per_experiment, axis=1), axis=0)
 
 # %% Plot the cumulative reward
-plt.figure(2)
+plt.figure(2, facecolor='white')
 plt.xlabel("t")
 plt.ylabel("Reward")
 plt.plot(cum_avg_reward_gpucb1, 'b')
@@ -118,7 +118,7 @@ plt.show()
 fig.savefig("results/S3_cumulative_reward.png")
 
 # %% Plot the instantaneous reward
-plt.figure(3)
+plt.figure(3, facecolor='white')
 plt.xlabel("t")
 plt.ylabel("Reward")
 plt.plot(avg_reward_gpucb1, 'b')
