@@ -91,4 +91,9 @@ fig = Young.plot_general_reward()
 fig = plt.gcf()
 fig.savefig("results/S0_clairvoyant_reward_Young.png")
 
+# %% Clairvoyant table
+print(Collector.clairvoyant())
+print(Parent.clairvoyant())
+print(Young.clairvoyant())
+
 # %%

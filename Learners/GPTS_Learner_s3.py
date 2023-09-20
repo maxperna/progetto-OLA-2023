@@ -38,19 +38,11 @@ class GPTS_Learner(Learner):
 
     def update_model(self):
         '''Updates the model with the new means and sigmas.'''
-        #x = np.atleast_2d(self.pulled_arms).T
+        
         x = np.atleast_2d(self.pulled_arms)
-        #x = np.array(self.pulled_arms)
         y = self.collected_rewards
-
-        # Fits the Gaussian process
         self.gp.fit(x, y)
-
-        # Evaluates current means and sigmas with a lower bound on the standard deviation of 0.01 (for convergence)
-        #self.means, self.sigmas = self.gp.predict(np.atleast_2d(self.arms[:,1]).T, return_std=True)
-        # TODO perché [:,1]? Nell'implementazione del lab non c'è
         self.means, self.sigmas = self.gp.predict(np.atleast_2d(self.arms), return_std=True)
-        #self.means, self.sigmas = self.gp.predict(np.array(self.arms), return_std=True)
         self.sigmas = np.maximum(self.sigmas, 1e-2)
 
     def update(self, pulled_arm, reward):

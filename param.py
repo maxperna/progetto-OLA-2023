@@ -40,6 +40,6 @@ sigma_gp = 5
 ##################################################
 
 p1_stationary = np.array([0.05, 0.1, 0.1, 0.025, 0.0125])
-p2_stationary = np.array([0.15, 0.125, 0.125, 0.075, 0.05])
+p2_stationary = np.array([0.15, 0.15, 0.1, 0.075, 0.05])
 p3_stationary = np.array([0.14, 0.12, 0.10, 0.03, 0.02])
-max_conversion_rate = 0.4 # for plots
+max_conversion_rate = 0.4       # for plots
