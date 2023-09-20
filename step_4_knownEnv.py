@@ -1,53 +1,76 @@
 # %%
+#ENVIRONMENT WITH KNOWN USERS CONTEXT
 import numpy as np
 import matplotlib.pyplot as plt
 
-from Environments.Environment_S3 import PricingBiddingEnvironment
-from Environments.Users import UserC1
-from Learners.GPTS_Learner_s3 import GPTS_Learner
-from Learners.GPUCB1_Learner_s3 import GPUCB1_Learner
+import logging
 
-from param import n_arms_bidding, min_bid, max_bid, T, n_experiments_S3, production_cost, std_noise_general
+from Environments.Environment_S4 import ContextEnvironment
+from Environments.Users import UserC1,UserC2,UserC3
+from Learners.GPTS_Contextual import GPTS_Contextual
+from Learners.GPUCB1_Contextual import GPUCB1_Contextual
 
+from param import n_arms_bidding, min_bid, max_bid, T, n_experiments_S4, production_cost, std_noise_general
 # %% Parameters
 bids = np.linspace(min_bid, max_bid, n_arms_bidding)
 
 Collector = UserC1()
+Parent = UserC2()
+Young = UserC3()
+
+# TODO Look in the other steps for clairvoyant optimum
+# optimum = Collector.clairvoyant()  # List of [price, bid, reward]
+
+print(Collector.get_features)
+#Express context as a dict in which each split is a set of customer
+context = {"Split1":[Collector],"Split2":[Parent],"Split3":[Young]}
+
 prices = Collector.prices
 
-best_price = Collector.clairvoyant()[0]
-conversion_rate = Collector.probabilities[np.where(Collector.prices == best_price)][0]
-
-margin = best_price - production_cost
+sigma = 10
 
 # Generate an action space with both bids and prices
 action_space = np.array([[bid,price] for bid in bids for price in prices]) # all combinations of bid and price
+
 n_arms = action_space.shape[0]
 
 gpts_rewards_per_experiment = []
 gpucb1_rewards_per_experiment = []
+#bids_made_per_experiment = [] #the bids made by the learner
+
+number_of_c1 = 0    #number of C1 users
+number_of_c2 = 0    #number of C2 users
+number_of_c3 = 0    #number of C3 users
 
 # %% Run the experiments
-for e in range(0, n_experiments_S3):
-    env = PricingBiddingEnvironment(actions=action_space, sigma = std_noise_general, bids=bids, user=UserC1(), production_cost=production_cost)
-    gpts_learner = GPTS_Learner(n_arms = n_arms, bids = action_space)
-    gpucb1_learner = GPUCB1_Learner(n_arms = n_arms, bids = action_space, M = Collector.clairvoyant()[2])
+for e in range(0, n_experiments_S4):
+    env = ContextEnvironment(actions=action_space, bids=bids, sigma = sigma, user_set=context)
+
+    gpts_learner = GPTS_Contextual(n_arms = n_arms, bids = action_space, context =context)
+    gpucb1_learner = GPUCB1_Contextual(n_arms = n_arms, bids = action_space, M = np.max(action_space[:,0]*action_space[:,1]), context = context)
+
+
     for t in range(0, T):
+        customer = env.get_current_features()  #set of features
         # GP UCB1 Learner
         pulled_arm = gpucb1_learner.pull_arm()
         reward = env.round(pulled_arm)
-        gpucb1_learner.update(pulled_arm, reward)
+        gpucb1_learner.update(pulled_arm, reward,customer)
 
         # GP Thompson Sampling Learner
         pulled_arm = gpts_learner.pull_arm()
         reward = env.round(pulled_arm)
-        gpts_learner.update(pulled_arm, reward)
+        gpts_learner.update(pulled_arm, reward,customer)
 
     gpts_rewards_per_experiment.append(gpts_learner.collected_rewards)
     gpucb1_rewards_per_experiment.append(gpucb1_learner.collected_rewards)
 
+
+
+
 # %% Compute the regret
-opt = np.max(env.means)
+opt = np.max([max(lst) for lst in env.means])  # FIXME check real optimum
+
 regret_gpucb1 = opt - gpucb1_rewards_per_experiment  # row = exp, col = t
 avg_regret_gpucb1 = np.mean(regret_gpucb1, axis=0)
 std_regret_gpucb1 = np.std(regret_gpucb1, axis=0)
@@ -73,7 +96,7 @@ plt.title("Cumulative Regret")
 fig = plt.gcf()
 plt.show()
 
-fig.savefig("results/S3_cumulative_regret.png")
+fig.savefig("results/S4_Known_cumulative_regret.png")
 
 # %% Plot the instantaneous regret
 fig = plt.figure(1,facecolor='white')
@@ -89,7 +112,7 @@ plt.title("Instantaneous Regret")
 fig = plt.gcf()
 plt.show()
 
-fig.savefig("results/S3_instantaneous_regret.png")
+fig.savefig("results/S4_Known_instantaneous_regret.png")
 
 # %% Compute the reward
 avg_reward_gpucb1 = np.mean(gpucb1_rewards_per_experiment, axis=0)
@@ -115,7 +138,7 @@ plt.title("Cumulative Reward")
 fig = plt.gcf()
 plt.show()
 
-fig.savefig("results/S3_cumulative_reward.png")
+fig.savefig("results/S4_Known_cumulative_reward.png")
 
 # %% Plot the instantaneous reward
 plt.figure(3, facecolor='white')
@@ -131,5 +154,5 @@ plt.title("Instantaneous Reward")
 fig = plt.gcf()
 plt.show()
 
-fig.savefig("results/S3_instantaneous_reward.png")
+fig.savefig("results/S4_Known_instantaneous_reward.png")
 # %%
