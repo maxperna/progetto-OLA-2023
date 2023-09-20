@@ -29,6 +29,7 @@ T = 365
 n_experiments_S1 = 10
 n_experiments_S2 = 5
 n_experiments_S3 = 5
+n_experiments_S5 = 10
 
 production_cost = 100
 
@@ -43,3 +44,23 @@ p1_stationary = np.array([0.05, 0.1, 0.1, 0.025, 0.0125])
 p2_stationary = np.array([0.15, 0.15, 0.1, 0.075, 0.05])
 p3_stationary = np.array([0.14, 0.12, 0.10, 0.03, 0.02])
 max_conversion_rate = 0.4       # for plots
+
+p1_non_stationary = np.array([[0.05, 0.1, 0.1, 0.025, 0.0125], [0.0125, 0.025, 0.1, 0.1, 0.05], [0.15, 0.1, 0.05, 0.025, 0.0125]])
+
+
+
+##################################################
+#            Sliding Window parameter            #
+##################################################
+
+Tau = 12 * int(T ** 0.5) # sliding window's size
+
+##################################################
+#                 CUSUM parameters               #
+##################################################
+
+N = 100 
+eps = 0.05
+threshold = 2 * np.log(T)
+alpha = 0.01
+

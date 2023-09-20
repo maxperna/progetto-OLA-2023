@@ -29,6 +29,7 @@ for e in range(0, n_experiments_S1):
     gr_learner = Greedy_Learner(n_arms=n_arms_pricing, production_cost=production_cost, n_clicks=n_clicks, cost_of_click=cost_of_click)
     ucb1_learner = UCB1_Learner(n_arms=n_arms_pricing, production_cost=production_cost, n_clicks=n_clicks, cost_of_click=cost_of_click, M = optimum[2])
     ts_learner = TS_Learner(n_arms=n_arms_pricing, production_cost=production_cost, n_clicks=n_clicks, cost_of_click=cost_of_click)
+
     for t in range(0, T):
         # Greedy Learner
         pulled_arm = gr_learner.pull_arm()
@@ -50,8 +51,11 @@ for e in range(0, n_experiments_S1):
     ucb1_rewards_per_experiment.append(ucb1_learner.collected_rewards)
     ts_rewards_per_experiment.append(ts_learner.collected_rewards)
 
+
 # %% Compute the regret
+
 opt = env.max_reward()
+print(opt)
 
 regret_greedy = opt - gr_rewards_per_experiment  # row = exp, col = t
 avg_regret_greedy = np.mean(regret_greedy, axis=0)
@@ -87,7 +91,7 @@ plt.title("Cumulative Regret")
 fig = plt.gcf()
 plt.show()
 
-fig.savefig("results/S1_cumulative_regret.png")
+#fig.savefig("results/S1_cumulative_regret.png")
 
 # %% Plot the instantaneous regret
 fig = plt.figure(1, facecolor='white')
@@ -105,7 +109,7 @@ plt.title("Instantaneous Regret")
 fig = plt.gcf()
 plt.show()
 
-fig.savefig("results/S1_instantaneous_regret.png")
+#fig.savefig("results/S1_instantaneous_regret.png")
 
 # %% Compute the reward
 avg_reward_greedy = np.mean(gr_rewards_per_experiment, axis=0)
@@ -139,7 +143,7 @@ plt.title("Cumulative Reward")
 fig = plt.gcf()
 plt.show()
 
-fig.savefig("results/S1_cumulative_reward.png")
+#fig.savefig("results/S1_cumulative_reward.png")
 
 # %% Plot the instantaneous reward
 plt.figure(3, facecolor='white')
@@ -157,7 +161,7 @@ plt.title("Instantaneous Reward")
 fig = plt.gcf()
 plt.show()
 
-fig.savefig("results/S1_instantaneous_reward.png")
+#fig.savefig("results/S1_instantaneous_reward.png")
 
 
 # %%

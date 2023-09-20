@@ -24,7 +24,7 @@ plt.title("Conversion Rate Curves")
 fig = plt.gcf()
 plt.show()
 
-fig.savefig("results/S0_conversion_rates.png")
+#fig.savefig("results/S0_conversion_rates.png")
 
 # %% Plot the expected rewards for the three classes of users
 fig = plt.figure(facecolor='white')
@@ -36,7 +36,7 @@ plt.title("Expected Rewards Curves")
 fig = plt.gcf()
 plt.show()
 
-fig.savefig("results/S0_expected_gain.png")
+#fig.savefig("results/S0_expected_gain.png")
 
 # %% Plot the click vs bid curves for the three classes of users
 fig = plt.figure(facecolor='white')
@@ -48,7 +48,7 @@ plt.title("Click vs Bid Curves")
 fig = plt.gcf()
 plt.show()
 
-fig.savefig("results/S0_click_vs_bid.png")
+#fig.savefig("results/S0_click_vs_bid.png")
 
 # %% Plot the cumulative cost vs bid curves for the three classes of users
 fig = plt.figure(facecolor='white')
@@ -61,7 +61,7 @@ plt.title("Cost vs Bid Curves")
 fig = plt.gcf()
 plt.show()
 
-fig.savefig("results/S0_cost_vs_bid.png")
+#fig.savefig("results/S0_cost_vs_bid.png")
 
 # %% Plot the cumulative cost vs bid curves for the three classes of users
 fig = plt.figure(facecolor='white')
@@ -73,23 +73,23 @@ plt.title("Average Cumulative daily Cost of Clicks vs Bid Curves")
 fig = plt.gcf()
 plt.show()
 
-fig.savefig("results/S0_avg_cumulative_cost_vs_bid.png")
+#fig.savefig("results/S0_avg_cumulative_cost_vs_bid.png")
 
 
 # %% Clairvoyant reward
 Collector.plot_general_reward()
 fig = plt.gcf()
-fig.savefig("results/S0_clairvoyant_reward_Collector.png")
+#fig.savefig("results/S0_clairvoyant_reward_Collector.png")
 
 # %%
 Parent.plot_general_reward()
 fig = plt.gcf()
-fig.savefig("results/S0_clairvoyant_reward_Parent.png")
+#fig.savefig("results/S0_clairvoyant_reward_Parent.png")
 
 # %%
 fig = Young.plot_general_reward()
 fig = plt.gcf()
-fig.savefig("results/S0_clairvoyant_reward_Young.png")
+#fig.savefig("results/S0_clairvoyant_reward_Young.png")
 
 # %% Clairvoyant table
 print(Collector.clairvoyant())

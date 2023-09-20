@@ -23,9 +23,16 @@ class User(ABC):
         self._curve_params = None
         self._min_price = min_price
         self._max_price = max_price
-        self._prices = np.linspace(self._min_price, self._max_price, len(self._probabilities))
+
+        if self._probabilities.ndim == 1:                   # caso stazionario
+            self.n_probs = len(self._probabilities)
+        else:                                               # caso non-stazionario
+            self.n_probs = np.shape(self._probabilities)[1]
+        self._prices = np.linspace(self._min_price, self._max_price, self.n_probs)
+
         self._std_noise_pricing = std_noise_pricing  # std of the gaussian noise
         self._reward_of_prices = self._prices * self._probabilities
+
         # Advertising parameters
         self._min_bid = min_bid
         self._max_bid = max_bid
@@ -65,20 +72,42 @@ class User(ABC):
     def fit_demand_curve(self):
         """
         Method used to fit the demand curve for the specific class of user
+        indx: current phase index
         """
-        x_val = np.linspace(self._min_price, self._max_price, len(self._probabilities)).astype(np.float32)
+        x_val = np.linspace(self._min_price, self._max_price, self.n_probs).astype(np.float32)
         y_val = self._probabilities
         params, _ = curve_fit(self.base_function, x_val, y_val)
         self._curve_params = params
         return
-
+    
+    def fit_demand_curve_NS(self, indx):
+        """
+        Method used to fit the demand curve for the specific class of user
+        indx: current phase index
+        """
+        x_val = np.linspace(self._min_price, self._max_price, self.n_probs).astype(np.float32)
+        y_val = self._probabilities[indx]
+        print(y_val)
+        params, _ = curve_fit(self.base_function, x_val, y_val)
+        self._curve_params = params
+        return
+    
     def demand_curve(self, price):
         """
         Method used to evaluate the demand curve for the specific class of user
         """
-        if self._curve_params is None:
+        if self._curve_params is None: 
             self.fit_demand_curve()
         return self.base_function(price, *self._curve_params)
+        
+    def demand_curve_NS(self, price, indx):
+        """
+        Method used to evaluate the demand curve for the specific class of user
+        indx: current phase index
+        """ 
+        self.fit_demand_curve_NS(indx)
+        return self.base_function(price, *self._curve_params)
+    
     
     def generate_conversion_rate(self, price):
         """
@@ -90,28 +119,55 @@ class User(ABC):
         """
         Method used to plot the demand curve for the specific class of user
         """
-        prices = np.linspace(self._min_price, self._max_price, 100)
-        demand = self.demand_curve(prices)
-        plt.xlabel('Price')
-        plt.ylabel('Demand')
-        plt.xlim(self._min_price, self._max_price)
-        plt.ylim(0, max_conversion_rate)
-        plt.title('Conversion Rate Curve for user class')
-        return plt.plot(prices, demand)  # lable=self.__class__.__name__
+        if self._probabilities.ndim == 1:                   # stationary case:
+            prices = np.linspace(self._min_price, self._max_price, 100)
+            demand = self.demand_curve(prices)
+            plt.xlabel('Price')
+            plt.ylabel('Demand')
+            plt.xlim(self._min_price, self._max_price)
+            plt.ylim(0, max_conversion_rate)
+            plt.title('Conversion Rate Curve for user class')
+            plt.plot(prices, demand)  # lable=self.__class__.__name__
+        
+        else:                                               # non-stationary case:
+            for i in range(0, len(self._probabilities)):
+                prices = np.linspace(self._min_price, self._max_price, 100)
+                demand = self.demand_curve_NS(prices, i)
+                plt.xlabel('Price')
+                plt.ylabel('Demand')
+                plt.xlim(self._min_price, self._max_price)
+                plt.ylim(0, max_conversion_rate)
+                plt.title('Conversion Rate Curve')
+                plt.plot(prices, demand)  # lable=self.__class__.__name__
+
 
     def plot_expected_pricing_gain(self):
         """
         Method used to plot the expected reward for the specific class of user
         """
-        prices = np.linspace(self._min_price, self._max_price, 100)
-        demand = self.demand_curve(prices)
-        expected_reward = prices * demand
-        plt.xlabel('Price')
-        plt.ylabel('Expected reward')
-        plt.xlim(self._min_price, self._max_price)
-        plt.ylim(0, self._max_price)
-        plt.title('Expected reward for prices by user class')
-        return plt.plot(prices, expected_reward)
+        if self._probabilities.ndim == 1:                   # stationary case:
+            prices = np.linspace(self._min_price, self._max_price, 100)
+            demand = self.demand_curve(prices)
+            expected_reward = prices * demand
+            plt.xlabel('Price')
+            plt.ylabel('Expected reward')
+            plt.xlim(self._min_price, self._max_price)
+            plt.ylim(0, self._max_price)
+            plt.title('Expected reward for prices by user class')
+            plt.plot(prices, expected_reward)
+        else:                                               # non-stationary case:
+            for i in range(0, len(self._probabilities)):
+                prices = np.linspace(self._min_price, self._max_price, 100)
+                demand = self.demand_curve_NS(prices,i)
+                expected_reward = prices * demand
+                plt.xlabel('Price')
+                plt.ylabel('Expected reward')
+                plt.xlim(self._min_price, self._max_price)
+                plt.ylim(0, self._max_price)
+                plt.title('Expected reward for user class')
+                plt.plot(prices, expected_reward)
+    
+
     
     ############################
     #    Advertising curves    # 
@@ -208,38 +264,80 @@ class User(ABC):
     ############################
     
     def clairvoyant(self):
-        best_bid = 0
-        best_price = 0
-        opt = 0
-        bids = np.linspace(self._min_bid, self._max_bid, 100)
-        for i in bids:
-            for id_j, j in enumerate(self._prices):
-                aux = self.click_vs_bid(i) * (self.probabilities[id_j]*(j-self.production_cost) - self.cost_vs_bid(i))
-                if (aux > opt):
-                    best_bid = i
-                    best_price = j
-                    opt = aux
-        return [best_price, best_bid, opt]
-    
+        if self._probabilities.ndim == 1:                   # stationary case:
+            best_bid = 0
+            best_price = 0
+            opt = 0
+            bids = np.linspace(self._min_bid, self._max_bid, 100)
+            for i in bids:
+                for id_j, j in enumerate(self._prices):
+                    aux = self.click_vs_bid(i) * (self.probabilities[id_j]*(j-self.production_cost) - self.cost_vs_bid(i))
+                    if (aux > opt):
+                        best_bid = i
+                        best_price = j
+                        opt = aux
+            return [best_price, best_bid, opt]
+        
+        else:                                               # non-stationary case:
+            results = []
+            for indx in range(0, len(self._probabilities)):
+                best_bid = 0
+                best_price = 0
+                opt = 0
+                bids = np.linspace(self._min_bid, self._max_bid, 100)
+                for i in bids:
+                    for id_j, j in enumerate(self._prices):
+                        aux = self.click_vs_bid(i) * (self.probabilities[indx][id_j]*(j-self.production_cost) - self.cost_vs_bid(i))
+                        if (aux > opt):
+                            best_bid = i
+                            best_price = j
+                            opt = aux
+                aux = [best_price, best_bid, opt]
+                results.append(aux)
+            return results
+        
+        
     def general_reward(self, price, bid, production_cost):
         return self.click_vs_bid(bid) * (self.demand_curve(price)*(price-production_cost) - self.cost_vs_bid(bid))
     
-    def plot_general_reward(self):
-        plt.figure(facecolor='white')
-        prices = np.linspace(self._min_price, self._max_price, 200)
-        bids = np.linspace(self._min_bid, self._max_bid, 200)
-        reward = np.zeros((len(prices), len(bids)))
-        for id_i, i in enumerate(prices):
-            for id_j, j in enumerate(bids):
-                reward[id_j, id_i] = self.general_reward(price=i, bid=j, production_cost= self.production_cost)
-        plt.xlabel('Price')
-        plt.ylabel('Bid')
-        plt.xlim(self._min_price, self._max_price)
-        plt.ylim(self._min_bid, self._max_bid)
-        plt.title('General reward for user class')
-        plt.contourf(prices, bids, reward, 100)
-        plt.colorbar()
-        return
+    def general_reward_NS(self, price, bid, production_cost, indx):
+        return self.click_vs_bid(bid) * (self.demand_curve_NS(price, indx)*(price-production_cost) - self.cost_vs_bid(bid))
+    
+
+    def plot_general_reward(self, indx = 0):
+
+        if self._probabilities.ndim == 1:                   # stationary case:
+            plt.figure(facecolor='white')
+            prices = np.linspace(self._min_price, self._max_price, 200)
+            bids = np.linspace(self._min_bid, self._max_bid, 200)
+            reward = np.zeros((len(prices), len(bids)))
+            for id_i, i in enumerate(prices):
+                for id_j, j in enumerate(bids):
+                    reward[id_j, id_i] = self.general_reward(price=i, bid=j, production_cost= self.production_cost)
+            plt.xlabel('Price')
+            plt.ylabel('Bid')
+            plt.xlim(self._min_price, self._max_price)
+            plt.ylim(self._min_bid, self._max_bid)
+            plt.title('General reward for user class')
+            plt.contourf(prices, bids, reward, 100)
+            plt.colorbar()
+        else:                                               # non-stationary case:
+            for indx in range(0, len(self._probabilities)):
+                plt.figure(facecolor='white')
+                prices = np.linspace(self._min_price, self._max_price, 200)
+                bids = np.linspace(self._min_bid, self._max_bid, 200)
+                reward = np.zeros((len(prices), len(bids)))
+                for id_i, i in enumerate(prices):
+                    for id_j, j in enumerate(bids):
+                        reward[id_j, id_i] = self.general_reward_NS(price=i, bid=j, production_cost= self.production_cost, indx = indx)
+                plt.xlabel('Price')
+                plt.ylabel('Bid')
+                plt.xlim(self._min_price, self._max_price)
+                plt.ylim(self._min_bid, self._max_bid)
+                plt.title('General reward for user class')
+                plt.contourf(prices, bids, reward, 100)
+                plt.colorbar()
+
 
 class UserC1(User):
     """
@@ -249,6 +347,9 @@ class UserC1(User):
 
     def __init__(self):
         super().__init__(True, True, p1_stationary)
+    
+    def __init__(self, f1_value = True, f2_value = True, probabilities = p1_stationary):
+        super().__init__(f1_value, f2_value, probabilities)
 
     def click_vs_bid(self, bid):
         bid = (bid - self._min_bid) / (self._max_bid - self._min_bid)
