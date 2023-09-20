@@ -27,7 +27,7 @@ Young = UserC3()
 print(Collector.get_features)
 #Express context as a dict in which each split is a set of customer
 context = {"Split1":[Collector],"Split2":[Parent],"Split3":[Young]}
-
+context_learner = {"Split1":[Collector,Parent,Young]}
 prices = Collector.prices
 
 sigma = 10
@@ -48,10 +48,11 @@ number_of_c3 = 0    #number of C3 users
 
 # %% Run the experiments
 for e in range(0, n_experiments_S4):
+    print(e)
     env = ContextEnvironment(actions=action_space, bids=bids, sigma = sigma, user_set=context)
     splitter = Context()
-    current_context_GPTS = context
-    current_context_GPUCB = context
+    current_context_GPTS = context_learner
+    current_context_GPUCB = context_learner
 
     gpts_learner = GPTS_Contextual(n_arms = n_arms, bids = action_space, context =None)
     gpucb1_learner = GPUCB1_Contextual(n_arms = n_arms, bids = action_space, M = np.max(action_space[:,0]*action_space[:,1]), context = None)
@@ -69,16 +70,16 @@ for e in range(0, n_experiments_S4):
         reward = env.round(pulled_arm)
         gpts_learner.update(pulled_arm, reward,customer)
 
-        if t%14 == 0:
+        if t%14 == 0 and t!=0:
             GPTS_context = splitter.split_context(current_context_GPTS,gpts_learner)
             GPUCB_context = splitter.split_context(current_context_GPUCB,gpucb1_learner)
             print(f"Splitted in {GPTS_context} + {GPUCB_context} at time {t}")
-            if(GPTS_context):
-                current_context_GPTS = GPTS_context
+            if(len(GPTS_context)!=0):
+                current_context_GPTS = GPTS_context.copy()
                 gpts_learner.update_context(current_context_GPTS)
 
-            if(GPUCB_context):
-                current_context_GPUCB = GPUCB_context
+            if(len(GPUCB_context)!=0):
+                current_context_GPUCB = GPUCB_context.copy()
                 gpucb1_learner.update_context(current_context_GPUCB)
 
     gpts_rewards_per_experiment.append(gpts_learner.collected_rewards)

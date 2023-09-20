@@ -8,7 +8,6 @@ class Context():
     def __init__(self):
         self._possible_splits = [[0,0],[1,0],[0,1],[1,1]]
         self._current_split = [False,False]   #Chech whether split on condition is happened or not
-        self._all_split = False  #boolean to check if all the possible splits have been done
         self_first_split = True
         self._confidence_interval = 1e-5
 
@@ -18,22 +17,36 @@ class Context():
         """
         #Create a map of the features of the context, maximum 3 splits
         features_map = []
+        if len(context)==3:
+            return context
+
+        final_context = {}
         for splits in context.keys():
+            if len(context[splits])==1:
+                final_context["Split1"] = [self.assess_user_type(context[splits][0].get_features[0],context[splits][0].get_features[1])]
+                continue
+            if len(context[splits])==2:
+                if context[splits][0].get_features[0] == context[splits][1].get_features[0]:
+                    self._current_split = [True,False]
+                else:
+                    self._current_split = [False,True]
             tmp = []
             for user in context[splits]:
                 tmp.append(user.get_features)
             features_map.append(tmp)    #created a map of feature for each context
 
+
+
         if self._current_split[0] and self._current_split[1]:
-            return False
-        feature_subset_1 = []
-        feature_subset_2 = []
+            return {}
+
         new_context = []
-        for i in [0,1]:
-            splitting_feature = i
+        for splitting_feature in [0,1]:
+            feature_subset_1 = []
+            feature_subset_2 = []
             if not (self._current_split[splitting_feature]):
                 if len(new_context)!=0:
-                    features_map = new_context
+                    features_map = new_context.copy()
                 for subcontext in features_map:
                     for feature in subcontext:
                         if feature[splitting_feature] == 0:
@@ -46,17 +59,15 @@ class Context():
                 result = self.evaluate_splitting(learner,feature_subset_1,feature_subset_2)
 
                 if result:
-                    new_context = [feature_subset_1,feature_subset_2]
-                else:
-                    break
+                    new_context = [feature_subset_1.copy(),feature_subset_2.copy()]
+                    self._current_split[splitting_feature] = True
 
-        final_context = {}
         for i,subcontext in enumerate(new_context):
-            key = "Split" + str(i)
+            key = "Split" + str(len(final_context)+1)
             final_context[key] = []
             for features in subcontext:
-                user = self.assess_user_type(features[0],feature[1])
-                final_context[key] = final_context[key].append(user)
+                user = self.assess_user_type(features[0],features[1])
+                final_context[key].append(user)
 
         return final_context
     def evaluate_splitting(self,learner: Learner,feature1,feature2):
@@ -82,11 +93,15 @@ class Context():
         """
         Method to calculate Hoeffding lower bound μ
         """
-        return np.mean(rewards) - np.sqrt(-np.log(self._confidence_interval)/(2*len(rewards)))
-
+        low_bound = np.mean(rewards) - np.sqrt(-np.log(self._confidence_interval)/(2*len(rewards)))
+        return low_bound
     def calculate_splitting_condition(self,p1,p2,rewards1,rewards2,rewards_old):
         valid = False
-        if p1*self.lower_bound(rewards1) + p2*self.lower_bound(rewards2) > self.lower_bound(rewards_old):
+        l_1 = self.lower_bound(rewards1)
+        l_2 = self.lower_bound(rewards2)
+        l_old = self.lower_bound(rewards_old)
+
+        if p1*l_1 + p2*l_2 > l_old:
             valid = True
         return valid
 

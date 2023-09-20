@@ -17,8 +17,8 @@ class ContextEnvironment():
         for user in self.customers:
             tmp = []
             for i in range(1, len(bids) + 1):
-                tmp[step * (i - 1):step * i] = user.demand_curve(user.prices) * np.repeat(user.click_vs_bid(bids[i - 1]), step)  # FIXME change this line with new reward (suggestion below)
-                # self.means[step*(i-1):step*i] = (user.prices - production_cost) * user.demand_curve(user.prices) * np.repeat(user.click_vs_bid(bids[i-1]),step) - np.repeat(user.cost_vs_bid(bids[i-1])*user.click_vs_bid(bids[i-1]),step)
+                #tmp[step * (i - 1):step * i] = user.demand_curve(user.prices) * np.repeat(user.click_vs_bid(bids[i - 1]), step)  # FIXME change this line with new reward (suggestion below)
+                tmp[step*(i-1):step*i] = (user.prices - production_cost) * user.demand_curve(user.prices) * np.repeat(user.click_vs_bid(bids[i-1]),step) - np.repeat(user.cost_vs_bid(bids[i-1])*user.click_vs_bid(bids[i-1]),step)
             self.means.append(tmp)
 
         self.sigmas = np.ones(len(actions)) * sigma

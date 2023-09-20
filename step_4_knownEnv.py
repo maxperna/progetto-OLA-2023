@@ -9,6 +9,8 @@ from Environments.Environment_S4 import ContextEnvironment
 from Environments.Users import UserC1,UserC2,UserC3
 from Learners.GPTS_Contextual import GPTS_Contextual
 from Learners.GPUCB1_Contextual import GPUCB1_Contextual
+from Learners.GPUCB1_Learner_s3 import GPUCB1_Learner
+from Learners.GPTS_Learner_s3 import GPTS_Learner
 
 from param import n_arms_bidding, min_bid, max_bid, T, n_experiments_S4, production_cost, std_noise_general
 # %% Parameters
@@ -19,9 +21,8 @@ Parent = UserC2()
 Young = UserC3()
 
 # TODO Look in the other steps for clairvoyant optimum
-# optimum = Collector.clairvoyant()  # List of [price, bid, reward]
-
-print(Collector.get_features)
+optimum = np.mean(Collector.clairvoyant()[2]+Parent.clairvoyant()[2]+Young.clairvoyant()[2])  # List of [price, bid, reward]
+print(optimum)
 #Express context as a dict in which each split is a set of customer
 context = {"Split1":[Collector],"Split2":[Parent],"Split3":[Young]}
 
@@ -46,9 +47,16 @@ number_of_c3 = 0    #number of C3 users
 for e in range(0, n_experiments_S4):
     env = ContextEnvironment(actions=action_space, bids=bids, sigma = sigma, user_set=context)
 
-    gpts_learner = GPTS_Contextual(n_arms = n_arms, bids = action_space, context =context)
-    gpucb1_learner = GPUCB1_Contextual(n_arms = n_arms, bids = action_space, M = np.max(action_space[:,0]*action_space[:,1]), context = context)
+    #Uncomment to use context
 
+    gpts_learner = GPTS_Contextual(n_arms = n_arms, bids = action_space, context =None)
+    gpucb1_learner = GPUCB1_Contextual(n_arms = n_arms, bids = action_space, M = np.max(action_space[:,0]*action_space[:,1]), context = None)
+
+    #Uncomment to not use context
+    """
+    gpts_learner = GPTS_Learner(n_arms=n_arms, bids=action_space)
+    gpucb1_learner = GPUCB1_Learner(n_arms=n_arms, bids=action_space,M=np.max(action_space[:, 0] * action_space[:, 1]))
+    """
 
     for t in range(0, T):
         customer = env.get_current_features()  #set of features
@@ -56,11 +64,13 @@ for e in range(0, n_experiments_S4):
         pulled_arm = gpucb1_learner.pull_arm()
         reward = env.round(pulled_arm)
         gpucb1_learner.update(pulled_arm, reward,customer)
+        #gpucb1_learner.update_observations(pulled_arm, reward)
 
         # GP Thompson Sampling Learner
         pulled_arm = gpts_learner.pull_arm()
         reward = env.round(pulled_arm)
         gpts_learner.update(pulled_arm, reward,customer)
+        #gpts_learner.update_observations(pulled_arm, reward)
 
     gpts_rewards_per_experiment.append(gpts_learner.collected_rewards)
     gpucb1_rewards_per_experiment.append(gpucb1_learner.collected_rewards)
@@ -69,7 +79,8 @@ for e in range(0, n_experiments_S4):
 
 
 # %% Compute the regret
-opt = np.max([max(lst) for lst in env.means])  # FIXME check real optimum
+#opt = np.max([max(lst) for lst in env.means])  # FIXME check real optimum
+opt = optimum
 
 regret_gpucb1 = opt - gpucb1_rewards_per_experiment  # row = exp, col = t
 avg_regret_gpucb1 = np.mean(regret_gpucb1, axis=0)
@@ -96,7 +107,7 @@ plt.title("Cumulative Regret")
 fig = plt.gcf()
 plt.show()
 
-fig.savefig("results/S4_Known_cumulative_regret.png")
+fig.savefig("results/S4_Known_no_cont_cumulative_regret.png")
 
 # %% Plot the instantaneous regret
 fig = plt.figure(1,facecolor='white')
@@ -112,7 +123,7 @@ plt.title("Instantaneous Regret")
 fig = plt.gcf()
 plt.show()
 
-fig.savefig("results/S4_Known_instantaneous_regret.png")
+fig.savefig("results/S4_Known_no_cont_instantaneous_regret.png")
 
 # %% Compute the reward
 avg_reward_gpucb1 = np.mean(gpucb1_rewards_per_experiment, axis=0)
@@ -138,7 +149,7 @@ plt.title("Cumulative Reward")
 fig = plt.gcf()
 plt.show()
 
-fig.savefig("results/S4_Known_cumulative_reward.png")
+fig.savefig("results/S4_Known_no_cont_cumulative_reward.png")
 
 # %% Plot the instantaneous reward
 plt.figure(3, facecolor='white')
@@ -154,5 +165,5 @@ plt.title("Instantaneous Reward")
 fig = plt.gcf()
 plt.show()
 
-fig.savefig("results/S4_Known_instantaneous_reward.png")
+fig.savefig("results/S4_Known_no_cont_instantaneous_reward.png")
 # %%

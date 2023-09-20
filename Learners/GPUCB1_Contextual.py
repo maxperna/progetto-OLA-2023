@@ -23,6 +23,8 @@ class GPUCB1_Contextual(Learner):
         self.rewards_per_context = []
         self.pulled_arms_context = []
 
+
+
         alpha = .5
         theta = 1.0
         l = 1.0
@@ -106,6 +108,13 @@ class GPUCB1_Contextual(Learner):
             self.rewards_per_context.append([])
             self.pulled_arms_context.append([])
             self.rewards_per_context.append([])
+
+        #reupdate all the contexts
+        for i,reward in enumerate(self.collected_rewards):
+            index = self.get_context_section(self.features[i])
+            self.rewards_per_context[index].append(reward)
+            self.pulled_arms_context[index].append(self.pulled_arms[i])
+
 
     def get_context_section(self,features):
         """
