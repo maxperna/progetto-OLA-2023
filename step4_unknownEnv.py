@@ -20,9 +20,6 @@ Collector = UserC1()
 Parent = UserC2()
 Young = UserC3()
 
-# TODO Look in the other steps for clairvoyant optimum
-# optimum = Collector.clairvoyant()  # List of [price, bid, reward]
-
 
 print(Collector.get_features)
 #Express context as a dict in which each split is a set of customer
@@ -86,10 +83,15 @@ for e in range(0, n_experiments_S4):
     gpucb1_rewards_per_experiment.append(gpucb1_learner.collected_rewards)
 
 
-
+# %% Clairvoyant
+rewards_clairvoyant = []
+for customer in [Collector,Parent,Young]:
+    best_price = customer.clairvoyant()[0]
+    best_bid = customer.clairvoyant()[1]
+    rewards_clairvoyant.append(customer.general_reward(best_price,best_bid,production_cost))
+opt = np.average(rewards_clairvoyant)
 
 # %% Compute the regret
-opt = np.max([max(lst) for lst in env.means])       # FIXME check optimum
 
 regret_gpucb1 = opt - gpucb1_rewards_per_experiment  # row = exp, col = t
 avg_regret_gpucb1 = np.mean(regret_gpucb1, axis=0)
@@ -116,7 +118,7 @@ plt.title("Cumulative Regret")
 fig = plt.gcf()
 plt.show()
 
-fig.savefig("results/S4_Unknown_cumulative_regret.png")
+fig.savefig("results/Step4_unknown/S4_Unknown_cumulative_regret.png")
 
 # %% Plot the instantaneous regret
 fig = plt.figure(1,facecolor='white')
@@ -132,7 +134,7 @@ plt.title("Instantaneous Regret")
 fig = plt.gcf()
 plt.show()
 
-fig.savefig("results/S4_Unknown_instantaneous_regret.png")
+fig.savefig("results/Step4_unknown/S4_Unknown_instantaneous_regret.png")
 
 # %% Compute the reward
 avg_reward_gpucb1 = np.mean(gpucb1_rewards_per_experiment, axis=0)
@@ -158,7 +160,7 @@ plt.title("Cumulative Reward")
 fig = plt.gcf()
 plt.show()
 
-fig.savefig("results/S4_Unknown_cumulative_reward.png")
+fig.savefig("results/Step4_unknown/S4_Unknown_cumulative_reward.png")
 
 # %% Plot the instantaneous reward
 plt.figure(3, facecolor='white')
@@ -174,5 +176,5 @@ plt.title("Instantaneous Reward")
 fig = plt.gcf()
 plt.show()
 
-fig.savefig("results/S4_Unknown_instantaneous_reward.png")
+fig.savefig("results/Step4_unknown/S4_Unknown_instantaneous_reward.png")
 # %%
