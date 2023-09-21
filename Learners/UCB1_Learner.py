@@ -27,9 +27,20 @@ class UCB1_Learner(Learner):
         pulled_arm = np.random.choice(idxs)
         return pulled_arm
         
-    def update(self, pulled_arm, reward, price):
+    def update(self, pulled_arm, reward, price, current_phase = 0):
+
+        # non-stationary extension:
+        if isinstance(self.n_clicks, np.ndarray):
+            current_n_clicks = self.n_clicks[current_phase]
+            current_cost_of_click = self.cost_of_click[current_phase]
+            #print(current_n_clicks)
+            #print(current_cost_of_click)
+        else:
+            current_n_clicks = self.n_clicks
+            current_cost_of_click = self.cost_of_click
+
         self.t += 1
         self.n_pulls[pulled_arm] += 1
-        gain = (price-self.production_cost)*reward - self.cost_of_click*self.n_clicks
+        gain = (price-self.production_cost)*reward - current_cost_of_click*current_n_clicks
         self.update_observations(pulled_arm, gain)     
         self.expected_rewards[pulled_arm] = (self.expected_rewards[pulled_arm] * (self.n_pulls[pulled_arm] - 1) + gain) / self.n_pulls[pulled_arm]  

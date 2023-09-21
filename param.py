@@ -29,7 +29,7 @@ T = 365
 n_experiments_S1 = 10
 n_experiments_S2 = 5
 n_experiments_S3 = 5
-n_experiments_S5 = 10
+n_experiments_S5 = 100
 
 production_cost = 100
 
@@ -53,7 +53,7 @@ p1_non_stationary = np.array([[0.05, 0.1, 0.1, 0.025, 0.0125], [0.0125, 0.025, 0
 #            Sliding Window parameter            #
 ##################################################
 
-Tau = 12 * int(T ** 0.5) # sliding window's size
+Tau = 6 * int(T ** 0.5) # sliding window's size
 
 ##################################################
 #                 CUSUM parameters               #
