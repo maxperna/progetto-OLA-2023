@@ -55,7 +55,7 @@ for e in range(0, n_experiments_S1):
 # %% Compute the regret
 
 opt = env.max_reward()
-print(opt)
+#print(opt)
 
 regret_greedy = opt - gr_rewards_per_experiment  # row = exp, col = t
 avg_regret_greedy = np.mean(regret_greedy, axis=0)

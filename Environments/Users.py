@@ -345,8 +345,8 @@ class UserC1(User):
     Collector User
     """
 
-    def __init__(self):
-        super().__init__(True, True, p1_stationary)
+    # def __init__(self):
+    #    super().__init__(True, True, p1_stationary)
     
     def __init__(self, f1_value = True, f2_value = True, probabilities = p1_stationary):
         super().__init__(f1_value, f2_value, probabilities)

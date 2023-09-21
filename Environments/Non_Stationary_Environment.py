@@ -12,7 +12,7 @@ class Non_Stationary_Environment(Environment):
 
     def round(self, pulled_arm): 
         # N.B. stesso nome e stessi input del metodo della superclass, va bene? Chiamato da un oggetto della classe figli dovrebbe avere il comportamento corretto
-        current_phase = int(self.t / self.phase_size)
+        current_phase = int(self.t / self.phase_size) # FIXME
         p = self.user._probabilities[current_phase][pulled_arm]
         reward = np.random.binomial(self.n_clicks, p) 
         self.t += 1
