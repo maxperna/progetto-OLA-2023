@@ -16,20 +16,20 @@ from Learners.CUSUM_UCB1_Learner_old import CUSUM_UCB1_Learner_old
 from Learners.EXP3_Learner_v2 import EXP3_Learner
 
 from param import T, n_arms_pricing, n_arms_pricing, p1_step_6, n_experiments_S6
-from param import production_cost, selected_bid_S6
+from param import production_cost, selected_bid_S6, p1_non_stationary
 from param import N_cd, eps_cd, threshold_cd
 from param import Tau
 
 
-# %% Non-Stationary setting:
+# %% Test EXP3 with 3 changes
 
-Collector = UserC1(True, True, p1_step_6)
+Collector = UserC1(True, True, p1_non_stationary)
 
-n_phases = len(p1_step_6)
+n_phases = len(p1_non_stationary)
 phases_len = np.ceil(T / n_phases)
 
 optimum = Collector.clairvoyant()
-# %%
+
 opt = np.array([])
 for i in range(0, n_phases):
     opt = np.append(opt, optimum[i][2])
@@ -47,22 +47,11 @@ ucb1_rewards_per_experiment = []
 sw_ucb1_rewards_per_experiment = []
 cd_ucb1_rewards_per_experiment = []
 exp3_rewards_per_experiment = []
-# ucb1_instantaneous_regret = []
-# ucb1_cumulative_regret = []
-
-M = 600  # TODO turn M into a vector
-
-
-# %% Plot the demand curves and the expected reward curves for each phase:
-fig = plt.figure()
-Collector_aux = UserC1(True, True, p1_step_6[:5])
-Collector_aux.plot_demand_curve()
-plt.legend(["phase 1", "phase 2", "phase 3", "phase 4", "phase 5"])
-plt.title("Conversion Rate Curves")
-plt.show()
 
 # %% Optimization of gamma in EXP3
 gamma = [0.001, 0.005, 0.01, 0.05, 0.1, 0.2, 0.5, 0.7, 1]
+
+Collector_S5 = UserC1(True, True, p1_non_stationary)
 
 avg_regret_exp3 = []
 std_regret_exp3 = []
@@ -76,7 +65,7 @@ for g in gamma:
             selected_bid=selected_bid_S6,
             production_cost=production_cost,
             n_arms=n_arms_pricing,
-            user=Collector,
+            user=Collector_S5,
             horizon=T,
         )
 
@@ -125,8 +114,39 @@ plt.show()
 fig.savefig("results/S6_cumulative_regret_by_gamma.png")
 
 
+# %% Test EXP3 with many changes
+Collector = UserC1(True, True, p1_step_6)
+
+n_phases = len(p1_step_6)
+phases_len = np.ceil(T / n_phases)
+
+optimum = Collector.clairvoyant()
+
+opt = np.array([])
+for i in range(0, n_phases):
+    opt = np.append(opt, optimum[i][2])
+
+
+opt_vec = np.array([])
+for i in range(0, T):
+    current_phase = int(i / phases_len)
+    opt_vec = np.append(opt_vec, opt[current_phase])
+
+n_clicks = Collector.click_vs_bid(selected_bid_S6)
+cost_of_click = Collector.cost_vs_bid(selected_bid_S6)
+
+
+# %% Plot the demand curves and the expected reward curves for each phase:
+fig = plt.figure()
+Collector_aux = UserC1(True, True, p1_step_6[:5])
+Collector_aux.plot_demand_curve()
+plt.legend(["phase 1", "phase 2", "phase 3", "phase 4", "phase 5"])
+plt.title("Conversion Rate Curves")
+plt.show()
+
+
 # %% Run the experiments
-gamma = 0.01
+gamma = 0.05
 
 ucb1_rewards_per_experiment = []
 sw_ucb1_rewards_per_experiment = []
@@ -169,7 +189,7 @@ for e in range(0, n_experiments_S6):
         production_cost=production_cost,
         n_clicks=n_clicks,
         cost_of_click=cost_of_click,
-        M=M,
+        M=600,
     )
     # sw_ucb1_learner = SW_UCB1_Learner_old(n_arms_pricing, Collector._max_price, Tau)
     # cd_ucb1_learner = CUSUM_UCB1_Learner_old(n_arm, Collector._max_price, N, eps, threshold)
