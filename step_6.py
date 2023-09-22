@@ -9,7 +9,7 @@ from Environments.Users import UserC1
 from Learners.UCB1_Learner import UCB1_Learner
 from Learners.SW_UCB1_Learner import SW_UCB1_Learner
 from Learners.CUSUM_UCB1_Learner import CUSUM_UCB1_Learner
-from Learners.EXP3_Learner_v2 import EXP3_Learner
+from Learners.EXP3_Learner import EXP3_Learner
 
 from param import T, n_arms_pricing, n_arms_pricing, p1_step_6, n_experiments_S6
 from param import production_cost, selected_bid_S6, p1_non_stationary
@@ -60,6 +60,7 @@ cum_std_regret_exp3 = []
 
 
 for g in gamma:
+    exp3_rewards_per_experiment = []
     for e in range(0, n_experiments_S6):
         ns_env = Non_Stationary_Environment(
             selected_bid=selected_bid_S6,
@@ -107,12 +108,13 @@ for i in range(len(gamma)):
     )
 plt.legend(gamma)
 
-plt.title("Cumulative Regret")
+plt.title("Cumulative Regret by Gamma")
 fig = plt.gcf()
 plt.show()
 
 fig.savefig("results/S6_3_phases_cumulative_regret_by_gamma.png")
 
+# %%
 ##################################################
 #           EXP3 3 changes comparison            #
 ##################################################
@@ -124,15 +126,44 @@ cd_ucb1_rewards_per_experiment = []
 exp3_rewards_per_experiment = []
 
 for e in range(0, n_experiments_S6):
-    ns_env_1 = Non_Stationary_Environment(selected_bid_S6,production_cost,n_arms_pricing,Collector,T)
-    ns_env_2 = Non_Stationary_Environment(selected_bid_S6,production_cost,n_arms_pricing,Collector,T)
-    ns_env_3 = Non_Stationary_Environment(selected_bid_S6,production_cost,n_arms_pricing,Collector,T)
-    ns_env_4 = Non_Stationary_Environment(selected_bid_S6,production_cost,n_arms_pricing,Collector,T)
+    ns_env_1 = Non_Stationary_Environment(
+        selected_bid_S6, production_cost, n_arms_pricing, Collector, T
+    )
+    ns_env_2 = Non_Stationary_Environment(
+        selected_bid_S6, production_cost, n_arms_pricing, Collector, T
+    )
+    ns_env_3 = Non_Stationary_Environment(
+        selected_bid_S6, production_cost, n_arms_pricing, Collector, T
+    )
+    ns_env_4 = Non_Stationary_Environment(
+        selected_bid_S6, production_cost, n_arms_pricing, Collector, T
+    )
 
-    ucb1_learner = UCB1_Learner(n_arms_pricing,production_cost,n_clicks,cost_of_click, 600)
-    sw_ucb1_learner = SW_UCB1_Learner(n_arms_pricing, production_cost, n_clicks, cost_of_click, Collector._max_price, Tau)
-    cd_ucb1_learner = CUSUM_UCB1_Learner(n_arms_pricing, production_cost, n_clicks, cost_of_click, Collector._max_price, N, eps, threshold, alpha)
-    exp3_learner = EXP3_Learner(n_arms_pricing,gamma,n_clicks,cost_of_click, production_cost)
+    ucb1_learner = UCB1_Learner(
+        n_arms_pricing, production_cost, n_clicks, cost_of_click, 600
+    )
+    sw_ucb1_learner = SW_UCB1_Learner(
+        n_arms_pricing,
+        production_cost,
+        n_clicks,
+        cost_of_click,
+        Collector._max_price,
+        Tau,
+    )
+    cd_ucb1_learner = CUSUM_UCB1_Learner(
+        n_arms_pricing,
+        production_cost,
+        n_clicks,
+        cost_of_click,
+        Collector._max_price,
+        N,
+        eps,
+        threshold,
+        alpha,
+    )
+    exp3_learner = EXP3_Learner(
+        n_arms_pricing, gamma, n_clicks, cost_of_click, production_cost
+    )
 
     for t in range(0, T):
         # UCB1 Learner:
@@ -194,8 +225,8 @@ fig = plt.figure(0, facecolor="white")
 plt.xlabel("t")
 plt.ylabel("Regret")
 plt.plot(cum_avg_regret_ucb1, "b")
-plt.plot(cum_avg_regret_sw_ucb1, "orange")
-plt.plot(cum_avg_regret_cd_ucb1, 'r')
+plt.plot(cum_avg_regret_sw_ucb1, "cyan")
+plt.plot(cum_avg_regret_cd_ucb1, "r")
 plt.plot(cum_avg_regret_exp3, "g")
 plt.fill_between(
     range(len(cum_avg_regret_ucb1)),
@@ -209,7 +240,7 @@ plt.fill_between(
     cum_avg_regret_sw_ucb1 - cum_std_regret_sw_ucb1,
     cum_avg_regret_sw_ucb1 + cum_std_regret_sw_ucb1,
     alpha=0.2,
-    color="orange",
+    color="cyan",
 )
 plt.fill_between(
     range(len(cum_avg_regret_cd_ucb1)),
@@ -225,7 +256,7 @@ plt.fill_between(
     alpha=0.2,
     color="g",
 )
-plt.legend(["UCB1", "SW_UCB1", "CUSUM_UCB1", "EXP3"]) 
+plt.legend(["UCB1", "SW_UCB1", "CUSUM_UCB1", "EXP3"])
 plt.title("Cumulative Regret")
 fig = plt.gcf()
 plt.show()
@@ -237,7 +268,7 @@ fig = plt.figure(1, facecolor="white")
 plt.xlabel("t")
 plt.ylabel("Regret")
 plt.plot(avg_regret_ucb1, "b")
-plt.plot(avg_regret_sw_ucb1, "orange")
+plt.plot(avg_regret_sw_ucb1, "cyan")
 plt.plot(avg_regret_cd_ucb1, "r")
 plt.plot(avg_regret_exp3, "g")
 plt.hlines(0, 0, T, colors="black", linestyles="dashed")
@@ -253,14 +284,14 @@ plt.fill_between(
     avg_regret_sw_ucb1 - std_regret_sw_ucb1,
     avg_regret_sw_ucb1 + std_regret_sw_ucb1,
     alpha=0.2,
-    color="orange",
+    color="cyan",
 )
 plt.fill_between(
     range(len(avg_regret_cd_ucb1)),
     avg_regret_cd_ucb1 - std_regret_cd_ucb1,
     avg_regret_cd_ucb1 + std_regret_cd_ucb1,
     alpha=0.2,
-    color='r',
+    color="r",
 )
 plt.fill_between(
     range(len(avg_regret_exp3)),
@@ -269,7 +300,7 @@ plt.fill_between(
     alpha=0.2,
     color="g",
 )
-plt.legend(["UCB1", "SW_UCB1", "CUSUM_UCB1", "EXP3"])  
+plt.legend(["UCB1", "SW_UCB1", "CUSUM_UCB1", "EXP3"])
 plt.title("Instantaneous Regret with Standard Deviation")
 fig = plt.gcf()
 plt.show()
@@ -284,13 +315,21 @@ cum_std_reward_ucb1 = np.std(np.cumsum(ucb1_rewards_per_experiment, axis=1), axi
 
 avg_reward_sw_ucb1 = np.mean(sw_ucb1_rewards_per_experiment, axis=0)
 std_reward_sw_ucb1 = np.std(sw_ucb1_rewards_per_experiment, axis=0)
-cum_avg_reward_sw_ucb1 = np.mean(np.cumsum(sw_ucb1_rewards_per_experiment, axis=1), axis=0)
-cum_std_rreward_sw_ucb1 = np.std(np.cumsum(sw_ucb1_rewards_per_experiment, axis=1), axis=0)
+cum_avg_reward_sw_ucb1 = np.mean(
+    np.cumsum(sw_ucb1_rewards_per_experiment, axis=1), axis=0
+)
+cum_std_rreward_sw_ucb1 = np.std(
+    np.cumsum(sw_ucb1_rewards_per_experiment, axis=1), axis=0
+)
 
 avg_reward_cd_ucb1 = np.mean(cd_ucb1_rewards_per_experiment, axis=0)
 std_reward_cd_ucb1 = np.std(cd_ucb1_rewards_per_experiment, axis=0)
-cum_avg_reward_cd_ucb1 = np.mean(np.cumsum(cd_ucb1_rewards_per_experiment, axis=1), axis=0)
-cum_std_rreward_cd_ucb1 = np.std(np.cumsum(cd_ucb1_rewards_per_experiment, axis=1), axis=0)
+cum_avg_reward_cd_ucb1 = np.mean(
+    np.cumsum(cd_ucb1_rewards_per_experiment, axis=1), axis=0
+)
+cum_std_rreward_cd_ucb1 = np.std(
+    np.cumsum(cd_ucb1_rewards_per_experiment, axis=1), axis=0
+)
 
 avg_reward_exp3 = np.mean(exp3_rewards_per_experiment, axis=0)
 std_reward_exp3 = np.std(exp3_rewards_per_experiment, axis=0)
@@ -303,8 +342,8 @@ plt.figure(2, facecolor="white")
 plt.xlabel("t")
 plt.ylabel("Reward")
 plt.plot(cum_avg_reward_ucb1, "b")
-plt.plot(cum_avg_reward_sw_ucb1, "orange")
-plt.plot(cum_avg_reward_cd_ucb1, 'r')
+plt.plot(cum_avg_reward_sw_ucb1, "cyan")
+plt.plot(cum_avg_reward_cd_ucb1, "r")
 plt.plot(cum_avg_reward_exp3, "g")
 plt.fill_between(
     range(len(cum_avg_reward_ucb1)),
@@ -318,7 +357,7 @@ plt.fill_between(
     cum_avg_reward_sw_ucb1 - cum_std_rreward_sw_ucb1,
     cum_avg_reward_sw_ucb1 + cum_std_rreward_sw_ucb1,
     alpha=0.2,
-    color="orange",
+    color="cyan",
 )
 plt.fill_between(
     range(len(cum_avg_reward_cd_ucb1)),
@@ -334,7 +373,7 @@ plt.fill_between(
     alpha=0.2,
     color="g",
 )
-plt.legend(["UCB1", "SW_UCB1", "CUSUM_UCB1", "EXP3"]) 
+plt.legend(["UCB1", "SW_UCB1", "CUSUM_UCB1", "EXP3"])
 plt.title("Cumulative Reward")
 fig = plt.gcf()
 plt.show()
@@ -346,8 +385,8 @@ plt.figure(3, facecolor="white")
 plt.xlabel("t")
 plt.ylabel("Reward")
 plt.plot(avg_reward_ucb1, "b")
-plt.plot(avg_reward_sw_ucb1, "orange")
-plt.plot(avg_reward_cd_ucb1, 'r')
+plt.plot(avg_reward_sw_ucb1, "cyan")
+plt.plot(avg_reward_cd_ucb1, "r")
 plt.plot(avg_reward_exp3, "g")
 plt.plot(range(T), opt_vec, "k--")
 plt.fill_between(
@@ -362,7 +401,7 @@ plt.fill_between(
     avg_reward_sw_ucb1 - std_reward_sw_ucb1,
     avg_reward_sw_ucb1 + std_reward_sw_ucb1,
     alpha=0.2,
-    color="orange",
+    color="cyan",
 )
 plt.fill_between(
     range(len(avg_reward_cd_ucb1)),
@@ -378,13 +417,12 @@ plt.fill_between(
     alpha=0.2,
     color="g",
 )
-plt.legend(["UCB1", "SW_UCB1", "CUSUM_UCB1", "EXP3"])  
+plt.legend(["UCB1", "SW_UCB1", "CUSUM_UCB1", "EXP3"])
 plt.title("Instantaneous Reward")
 fig = plt.gcf()
 plt.show()
 
 fig.savefig("results/S6_3_phases_instantaneous_reward.png")
-
 
 
 # %% Test EXP3 with many changes
@@ -422,7 +460,7 @@ plt.show()
 
 
 # %% Run the experiments
-gamma = 0.01
+gamma = 0.005
 
 ucb1_rewards_per_experiment = []
 sw_ucb1_rewards_per_experiment = []
@@ -430,16 +468,44 @@ cd_ucb1_rewards_per_experiment = []
 exp3_rewards_per_experiment = []
 
 for e in range(0, n_experiments_S6):
-    ns_env_1 = Non_Stationary_Environment(selected_bid_S6,production_cost,n_arms_pricing,Collector,T)
-    ns_env_2 = Non_Stationary_Environment(selected_bid_S6,production_cost,n_arms_pricing,Collector,T)
-    ns_env_3 = Non_Stationary_Environment(selected_bid_S6,production_cost,n_arms_pricing,Collector,T)
-    ns_env_4 = Non_Stationary_Environment(selected_bid_S6,production_cost,n_arms_pricing,Collector,T)
+    ns_env_1 = Non_Stationary_Environment(
+        selected_bid_S6, production_cost, n_arms_pricing, Collector, T
+    )
+    ns_env_2 = Non_Stationary_Environment(
+        selected_bid_S6, production_cost, n_arms_pricing, Collector, T
+    )
+    ns_env_3 = Non_Stationary_Environment(
+        selected_bid_S6, production_cost, n_arms_pricing, Collector, T
+    )
+    ns_env_4 = Non_Stationary_Environment(
+        selected_bid_S6, production_cost, n_arms_pricing, Collector, T
+    )
 
-    ucb1_learner = UCB1_Learner(n_arms_pricing,production_cost,n_clicks,cost_of_click, 600)
-    sw_ucb1_learner = SW_UCB1_Learner(n_arms_pricing, production_cost, n_clicks, cost_of_click, Collector._max_price, Tau)
-    cd_ucb1_learner = CUSUM_UCB1_Learner(n_arms_pricing, production_cost, n_clicks, cost_of_click, Collector._max_price, N, eps, threshold, alpha)
-    exp3_learner = EXP3_Learner(n_arms_pricing,gamma,n_clicks,cost_of_click, production_cost)
-
+    ucb1_learner = UCB1_Learner(
+        n_arms_pricing, production_cost, n_clicks, cost_of_click, 600
+    )
+    sw_ucb1_learner = SW_UCB1_Learner(
+        n_arms_pricing,
+        production_cost,
+        n_clicks,
+        cost_of_click,
+        Collector._max_price,
+        Tau,
+    )
+    cd_ucb1_learner = CUSUM_UCB1_Learner(
+        n_arms_pricing,
+        production_cost,
+        n_clicks,
+        cost_of_click,
+        Collector._max_price,
+        N,
+        eps,
+        threshold,
+        alpha,
+    )
+    exp3_learner = EXP3_Learner(
+        n_arms_pricing, gamma, n_clicks, cost_of_click, production_cost
+    )
 
     for t in range(0, T):
         # UCB1 Learner:
@@ -501,8 +567,8 @@ fig = plt.figure(0, facecolor="white")
 plt.xlabel("t")
 plt.ylabel("Regret")
 plt.plot(cum_avg_regret_ucb1, "b")
-plt.plot(cum_avg_regret_sw_ucb1, "orange")
-plt.plot(cum_avg_regret_cd_ucb1, 'r')
+plt.plot(cum_avg_regret_sw_ucb1, "cyan")
+plt.plot(cum_avg_regret_cd_ucb1, "r")
 plt.plot(cum_avg_regret_exp3, "g")
 plt.fill_between(
     range(len(cum_avg_regret_ucb1)),
@@ -516,7 +582,7 @@ plt.fill_between(
     cum_avg_regret_sw_ucb1 - cum_std_regret_sw_ucb1,
     cum_avg_regret_sw_ucb1 + cum_std_regret_sw_ucb1,
     alpha=0.2,
-    color="orange",
+    color="cyan",
 )
 plt.fill_between(
     range(len(cum_avg_regret_cd_ucb1)),
@@ -532,7 +598,7 @@ plt.fill_between(
     alpha=0.2,
     color="g",
 )
-plt.legend(["UCB1", "SW_UCB1", "CUSUM_UCB1", "EXP3"]) 
+plt.legend(["UCB1", "SW_UCB1", "CUSUM_UCB1", "EXP3"])
 plt.title("Cumulative Regret")
 fig = plt.gcf()
 plt.show()
@@ -544,7 +610,7 @@ fig = plt.figure(1, facecolor="white")
 plt.xlabel("t")
 plt.ylabel("Regret")
 plt.plot(avg_regret_ucb1, "b")
-plt.plot(avg_regret_sw_ucb1, "orange")
+plt.plot(avg_regret_sw_ucb1, "cyan")
 plt.plot(avg_regret_cd_ucb1, "r")
 plt.plot(avg_regret_exp3, "g")
 plt.hlines(0, 0, T, colors="black", linestyles="dashed")
@@ -560,14 +626,14 @@ plt.fill_between(
     avg_regret_sw_ucb1 - std_regret_sw_ucb1,
     avg_regret_sw_ucb1 + std_regret_sw_ucb1,
     alpha=0.2,
-    color="orange",
+    color="cyan",
 )
 plt.fill_between(
     range(len(avg_regret_cd_ucb1)),
     avg_regret_cd_ucb1 - std_regret_cd_ucb1,
     avg_regret_cd_ucb1 + std_regret_cd_ucb1,
     alpha=0.2,
-    color='r',
+    color="r",
 )
 plt.fill_between(
     range(len(avg_regret_exp3)),
@@ -576,7 +642,7 @@ plt.fill_between(
     alpha=0.2,
     color="g",
 )
-plt.legend(["UCB1", "SW_UCB1", "CUSUM_UCB1", "EXP3"])  
+plt.legend(["UCB1", "SW_UCB1", "CUSUM_UCB1", "EXP3"])
 plt.title("Instantaneous Regret with Standard Deviation")
 fig = plt.gcf()
 plt.show()
@@ -591,13 +657,21 @@ cum_std_reward_ucb1 = np.std(np.cumsum(ucb1_rewards_per_experiment, axis=1), axi
 
 avg_reward_sw_ucb1 = np.mean(sw_ucb1_rewards_per_experiment, axis=0)
 std_reward_sw_ucb1 = np.std(sw_ucb1_rewards_per_experiment, axis=0)
-cum_avg_reward_sw_ucb1 = np.mean(np.cumsum(sw_ucb1_rewards_per_experiment, axis=1), axis=0)
-cum_std_rreward_sw_ucb1 = np.std(np.cumsum(sw_ucb1_rewards_per_experiment, axis=1), axis=0)
+cum_avg_reward_sw_ucb1 = np.mean(
+    np.cumsum(sw_ucb1_rewards_per_experiment, axis=1), axis=0
+)
+cum_std_rreward_sw_ucb1 = np.std(
+    np.cumsum(sw_ucb1_rewards_per_experiment, axis=1), axis=0
+)
 
 avg_reward_cd_ucb1 = np.mean(cd_ucb1_rewards_per_experiment, axis=0)
 std_reward_cd_ucb1 = np.std(cd_ucb1_rewards_per_experiment, axis=0)
-cum_avg_reward_cd_ucb1 = np.mean(np.cumsum(cd_ucb1_rewards_per_experiment, axis=1), axis=0)
-cum_std_rreward_cd_ucb1 = np.std(np.cumsum(cd_ucb1_rewards_per_experiment, axis=1), axis=0)
+cum_avg_reward_cd_ucb1 = np.mean(
+    np.cumsum(cd_ucb1_rewards_per_experiment, axis=1), axis=0
+)
+cum_std_rreward_cd_ucb1 = np.std(
+    np.cumsum(cd_ucb1_rewards_per_experiment, axis=1), axis=0
+)
 
 avg_reward_exp3 = np.mean(exp3_rewards_per_experiment, axis=0)
 std_reward_exp3 = np.std(exp3_rewards_per_experiment, axis=0)
@@ -610,8 +684,8 @@ plt.figure(2, facecolor="white")
 plt.xlabel("t")
 plt.ylabel("Reward")
 plt.plot(cum_avg_reward_ucb1, "b")
-plt.plot(cum_avg_reward_sw_ucb1, "orange")
-plt.plot(cum_avg_reward_cd_ucb1, 'r')
+plt.plot(cum_avg_reward_sw_ucb1, "cyan")
+plt.plot(cum_avg_reward_cd_ucb1, "r")
 plt.plot(cum_avg_reward_exp3, "g")
 plt.fill_between(
     range(len(cum_avg_reward_ucb1)),
@@ -625,7 +699,7 @@ plt.fill_between(
     cum_avg_reward_sw_ucb1 - cum_std_rreward_sw_ucb1,
     cum_avg_reward_sw_ucb1 + cum_std_rreward_sw_ucb1,
     alpha=0.2,
-    color="orange",
+    color="cyan",
 )
 plt.fill_between(
     range(len(cum_avg_reward_cd_ucb1)),
@@ -641,7 +715,7 @@ plt.fill_between(
     alpha=0.2,
     color="g",
 )
-plt.legend(["UCB1", "SW_UCB1", "CUSUM_UCB1", "EXP3"]) 
+plt.legend(["UCB1", "SW_UCB1", "CUSUM_UCB1", "EXP3"])
 plt.title("Cumulative Reward")
 fig = plt.gcf()
 plt.show()
@@ -653,8 +727,8 @@ plt.figure(3, facecolor="white")
 plt.xlabel("t")
 plt.ylabel("Reward")
 plt.plot(avg_reward_ucb1, "b")
-plt.plot(avg_reward_sw_ucb1, "orange")
-plt.plot(avg_reward_cd_ucb1, 'r')
+plt.plot(avg_reward_sw_ucb1, "cyan")
+plt.plot(avg_reward_cd_ucb1, "r")
 plt.plot(avg_reward_exp3, "g")
 plt.plot(range(T), opt_vec, "k--")
 plt.fill_between(
@@ -669,7 +743,7 @@ plt.fill_between(
     avg_reward_sw_ucb1 - std_reward_sw_ucb1,
     avg_reward_sw_ucb1 + std_reward_sw_ucb1,
     alpha=0.2,
-    color="orange",
+    color="cyan",
 )
 plt.fill_between(
     range(len(avg_reward_cd_ucb1)),
@@ -685,7 +759,7 @@ plt.fill_between(
     alpha=0.2,
     color="g",
 )
-plt.legend(["UCB1", "SW_UCB1", "CUSUM_UCB1", "EXP3"])  
+plt.legend(["UCB1", "SW_UCB1", "CUSUM_UCB1", "EXP3"])
 plt.title("Instantaneous Reward")
 fig = plt.gcf()
 plt.show()
