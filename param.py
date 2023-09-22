@@ -29,6 +29,7 @@ T = 365
 n_experiments_S1 = 10
 n_experiments_S2 = 5
 n_experiments_S3 = 5
+n_experiments_S4 = 5
 n_experiments_S5 = 100
 
 production_cost = 100

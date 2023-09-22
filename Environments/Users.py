@@ -61,6 +61,10 @@ class User(ABC):
     def reward_of_prices(self):
         return self._reward_of_prices
 
+    @property
+    def get_features(self):
+        return [self._f1_value, self._f2_value]
+    
     ############################
     #      Demand curve        #
     ############################
