@@ -22,25 +22,26 @@ class CUSUM:
     self.t = 0
 
 
-  def update(self, sample):
-    self.t += 1
+  def update(self, sample, pulled_arm):
+    self.t += 1 # TODO: verificare se va messo a fine funzione
 
     if self.t <= self.N:
       self.reference += sample/self.N
-      print("new arm REFERENCE: ", self.reference, "Sample:", sample)
+      #if(pulled_arm == 2):
+      #print("new arm REFERENCE: ", self.reference, "Sample:", sample)
       return False
     
     else:
-
       self.reference = (self.reference*(self.t-1) + sample)/self.t
       s_plus = (sample - self.reference) - self.eps
       s_minus = -(sample - self.reference) - self.eps
       self.g_plus = max(0, self.g_plus + s_plus)
       self.g_minus = max(0, self.g_minus + s_minus)
 
-      print("time: ", self.t, "REFERENCE: ", self.reference, "Sample: ", sample)
-      print("s_plus: ", s_plus, "g_plus: ", self.g_plus)
-      print('')
+      # if(pulled_arm == 2):
+      # print("time: ", self.t, "REFERENCE: ", self.reference, "Sample: ", sample)
+      # print("s_plus: ", s_plus, "s_minus: ", s_minus, "g_plus: ", self.g_plus, "g_minus: ", self.g_minus)
+      # print('')
       
       if self.g_plus > self.threshold or self.g_minus > self.threshold:
         print("Abrupt change detected!")
