@@ -35,13 +35,11 @@ class SW_UCB1_Learner(Learner):
         pulled_arm = np.random.choice(idxs)
         return pulled_arm
     
-    def update(self, pulled_arm, reward, price, current_phase):
+    def update(self, pulled_arm, reward, price, current_phase = 0):
 
         if isinstance(self.n_clicks, np.ndarray):
             current_n_clicks = self.n_clicks[current_phase]
             current_cost_of_click = self.cost_of_click[current_phase]
-            #print(current_n_clicks)
-            #print(current_cost_of_click)
         else:
             current_n_clicks = self.n_clicks
             current_cost_of_click = self.cost_of_click
@@ -70,22 +68,4 @@ class SW_UCB1_Learner(Learner):
             else:
                 self.expected_rewards[a_old] = sum(self.reward_per_arm_tau[a_old]) / self.n_pulls[a_old] 
 
-        '''
-        # printing: 
-        print('time:')
-        print(self.t)
-        print('UCBs:')
-        print(self.upper_confidence_bounds)
-        print('n_pulls:')
-        print(self.n_pulls)
-        #print('collected_rewards:')
-        #print(self.collected_rewards)
-        print('collected_rewards_tau:')
-        print(self.collected_rewards_tau)
-        print('pulled_arms:')
-        print(self.pulled_arms)
-        print('expected_rewards:')
-        print(self.expected_rewards)
-        print('')
-        '''
         

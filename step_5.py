@@ -95,132 +95,184 @@ for e in range(0, n_experiments_S5):
     cd_ucb1_rewards_per_experiment.append(cd_ucb1_learner.collected_rewards)
 
 
-
 # %% Compute the regret
-avg_regret_ucb1 = np.mean(opt_vec - ucb1_rewards_per_experiment, axis=0)
-avg_regret_sw_ucb1 = np.mean(opt_vec - sw_ucb1_rewards_per_experiment, axis=0)
-avg_regret_cd_ucb1 = np.mean(opt_vec - cd_ucb1_rewards_per_experiment, axis=0)
+regret_ucb1 = [opt_vec - result for result in ucb1_rewards_per_experiment]
+avg_regret_ucb1 = np.mean(regret_ucb1, axis=0)
+std_regret_ucb1 = np.std(regret_ucb1, axis=0)
+cum_avg_regret_ucb1 = np.mean(np.cumsum(regret_ucb1, axis=1), axis=0)
+cum_std_regret_ucb1 = np.std(np.cumsum(regret_ucb1, axis=1), axis=0)
 
-std_regret_ucb1 = np.std(opt_vec - ucb1_rewards_per_experiment, axis=0)
-std_regret_sw_ucb1 = np.std(opt_vec - sw_ucb1_rewards_per_experiment, axis=0)
-std_regret_cd_ucb1 = np.std(opt_vec - cd_ucb1_rewards_per_experiment, axis=0)
+# sw regret
+regret_sw_ucb1 = [opt_vec - result for result in sw_ucb1_rewards_per_experiment]
+avg_regret_sw_ucb1 = np.mean(regret_sw_ucb1, axis=0)
+std_regret_sw_ucb1 = np.std(regret_sw_ucb1, axis=0)
+cum_avg_regret_sw_ucb1 = np.mean(np.cumsum(regret_sw_ucb1, axis=1), axis=0)
+cum_std_regret_sw_ucb1 = np.std(np.cumsum(regret_sw_ucb1, axis=1), axis=0)
 
-# print(np.shape(ucb1_rewards_per_experiment))
-# print(np.shape(sw_ucb1_rewards_per_experiment))
+# cd regret
+regret_cd_ucb1 = [opt_vec - result for result in cd_ucb1_rewards_per_experiment]
+avg_regret_cd_ucb1 = np.mean(regret_cd_ucb1, axis=0)
+std_regret_cd_ucb1 = np.std(regret_cd_ucb1, axis=0)
+cum_avg_regret_cd_ucb1 = np.mean(np.cumsum(regret_cd_ucb1, axis=1), axis=0)
+cum_std_regret_cd_ucb1 = np.std(np.cumsum(regret_cd_ucb1, axis=1), axis=0)
 
-# print(np.shape(avg_regret_ucb1))
-# print(np.shape(avg_regret_sw_ucb1))
 
 # %% Plot the cumulative regret
-plt.figure(0)
+fig = plt.figure(0, facecolor="white")
 plt.xlabel("t")
 plt.ylabel("Regret")
-plt.plot(np.cumsum(avg_regret_ucb1), 'g')
-plt.plot(np.cumsum(avg_regret_sw_ucb1), 'b')
-plt.plot(np.cumsum(avg_regret_cd_ucb1), 'r')
-#plt.legend(["UCB1", "SW_UCB1"])
-plt.legend(["UCB1", "SW_UCB1", "CUSUM_UCB1"])
+plt.plot(cum_avg_regret_ucb1, "b")
+plt.plot(cum_avg_regret_sw_ucb1, "orange")
+plt.plot(cum_avg_regret_cd_ucb1, 'r')
+plt.fill_between(
+    range(len(cum_avg_regret_ucb1)),
+    cum_avg_regret_ucb1 - cum_std_regret_ucb1,
+    cum_avg_regret_ucb1 + cum_std_regret_ucb1,
+    alpha=0.2,
+    color="b",
+)
+plt.fill_between(
+    range(len(cum_avg_regret_sw_ucb1)),
+    cum_avg_regret_sw_ucb1 - cum_std_regret_sw_ucb1,
+    cum_avg_regret_sw_ucb1 + cum_std_regret_sw_ucb1,
+    alpha=0.2,
+    color="orange",
+)
+plt.fill_between(
+    range(len(cum_avg_regret_cd_ucb1)),
+    cum_avg_regret_cd_ucb1 - cum_std_regret_cd_ucb1,
+    cum_avg_regret_cd_ucb1 + cum_std_regret_cd_ucb1,
+    alpha=0.2,
+    color="r",
+)
+plt.legend(["UCB1", "SW_UCB1", "CUSUM_UCB1"]) 
 plt.title("Cumulative Regret")
+fig = plt.gcf()
 plt.show()
 
-# %% Plot the cumulative reward
-plt.figure(1)
-plt.xlabel("t")
-plt.ylabel("Reward")
-plt.plot(np.cumsum(np.mean(ucb1_rewards_per_experiment, axis=0)), 'g')
-plt.plot(np.cumsum(np.mean(sw_ucb1_rewards_per_experiment, axis=0)), 'b')
-plt.plot(np.cumsum(np.mean(cd_ucb1_rewards_per_experiment, axis=0)), 'r')
-plt.legend(["UCB1", "SW_UCB1", "CUSUM_UCB1"])
-plt.title("Cumulative Reward")
-plt.show()
-
-# %% Plot the instantaneous regret
-plt.figure(2)
-plt.xlabel("t")
-plt.ylabel("Regret")
-plt.plot(avg_regret_ucb1, 'g')
-plt.plot(avg_regret_sw_ucb1, 'b')
-plt.plot(avg_regret_cd_ucb1, 'r')
-plt.hlines(y=0, xmin=0, xmax=T, colors='k', linestyles='dashed')
-#plt.ylim(-0.1, 1)
-plt.legend(["UCB1", "SW_UCB1", "CUSUM_UCB1", "Clairvoyant"])
-plt.title("Instantaneous Regret")
-plt.show()
-
-# %% Plot the instantaneous reward
-plt.figure(3)
-plt.xlabel("t")
-plt.ylabel("Reward")
-plt.plot(np.mean(ucb1_rewards_per_experiment, axis=0), 'g')
-plt.plot(np.mean(sw_ucb1_rewards_per_experiment, axis=0), 'b')
-plt.plot(np.mean(cd_ucb1_rewards_per_experiment, axis=0), 'r')
-plt.hlines(y=opt[0], xmin=0, xmax=phases_len, colors='k', linestyles='dashed')
-plt.hlines(y=opt[1], xmin=phases_len+1, xmax=phases_len*2, colors='k', linestyles='dashed')
-plt.hlines(y=opt[2], xmin=phases_len*2+1, xmax=T, colors='k', linestyles='dashed')
-plt.legend(["UCB1", "SW_UCB1", "CUSUM_UCB1", "Clairvoyant"])
-plt.title("Instantaneous Reward")
-plt.show()
-
+fig.savefig("results/S5_cumulative_regret.png")
 
 # %% Plot the instantaneous regret with standard deviation
-plt.figure(4)
+fig = plt.figure(1, facecolor="white")
 plt.xlabel("t")
 plt.ylabel("Regret")
-plt.plot(avg_regret_ucb1, 'g')
-plt.plot(avg_regret_sw_ucb1, 'b')
-plt.plot(avg_regret_cd_ucb1, 'r')
-plt.hlines(y=0, xmin=0, xmax=T, colors='k', linestyles='dashed')
-plt.fill_between(range(len(avg_regret_ucb1)), avg_regret_ucb1 - std_regret_ucb1, avg_regret_ucb1 + std_regret_ucb1, color='g', alpha=0.2)
-plt.fill_between(range(len(avg_regret_sw_ucb1)), avg_regret_sw_ucb1 - std_regret_sw_ucb1, avg_regret_sw_ucb1 + std_regret_sw_ucb1, color='b', alpha=0.2)
-plt.fill_between(range(len(avg_regret_cd_ucb1)), avg_regret_cd_ucb1 - std_regret_cd_ucb1, avg_regret_cd_ucb1 + std_regret_cd_ucb1, color='r', alpha=0.2)
-plt.legend(["UCB1", "SW_UCB1", "CUSUM_UCB1", "Clairvoyant"])
+plt.plot(avg_regret_ucb1, "b")
+plt.plot(avg_regret_sw_ucb1, "orange")
+plt.plot(avg_regret_cd_ucb1, "r")
+plt.hlines(0, 0, T, colors="black", linestyles="dashed")
+plt.fill_between(
+    range(len(avg_regret_ucb1)),
+    avg_regret_ucb1 - std_regret_ucb1,
+    avg_regret_ucb1 + std_regret_ucb1,
+    alpha=0.2,
+    color="b",
+)
+plt.fill_between(
+    range(len(avg_regret_sw_ucb1)),
+    avg_regret_sw_ucb1 - std_regret_sw_ucb1,
+    avg_regret_sw_ucb1 + std_regret_sw_ucb1,
+    alpha=0.2,
+    color="orange",
+)
+plt.fill_between(
+    range(len(avg_regret_cd_ucb1)),
+    avg_regret_cd_ucb1 - std_regret_cd_ucb1,
+    avg_regret_cd_ucb1 + std_regret_cd_ucb1,
+    alpha=0.2,
+    color='r',
+)
+plt.legend(["UCB1", "SW_UCB1", "CUSUM_UCB1"])  
 plt.title("Instantaneous Regret with Standard Deviation")
+fig = plt.gcf()
 plt.show()
 
+fig.savefig("results/S5_instantaneous_regret.png")
 
-# %% Plot of cumulative regret with variance
-avg_cum_regret_ucb1 = np.cumsum(avg_regret_ucb1)
-avg_cum_regret_sw_ucb1 = np.cumsum(avg_regret_sw_ucb1)
-avg_cum_regret_cd_ucb1 = np.cumsum(avg_regret_cd_ucb1)
+# %% Compute the reward
+avg_reward_ucb1 = np.mean(ucb1_rewards_per_experiment, axis=0)
+std_reward_ucb1 = np.std(ucb1_rewards_per_experiment, axis=0)
+cum_avg_reward_ucb1 = np.mean(np.cumsum(ucb1_rewards_per_experiment, axis=1), axis=0)
+cum_std_reward_ucb1 = np.std(np.cumsum(ucb1_rewards_per_experiment, axis=1), axis=0)
 
-std_cum_regret_ucb1 = np.cumsum(std_regret_ucb1)
-std_cum_regret_sw_ucb1 = np.cumsum(std_regret_sw_ucb1)
-std_cum_regret_cd_ucb1 = np.cumsum(std_regret_cd_ucb1)
+avg_reward_sw_ucb1 = np.mean(sw_ucb1_rewards_per_experiment, axis=0)
+std_reward_sw_ucb1 = np.std(sw_ucb1_rewards_per_experiment, axis=0)
+cum_avg_reward_sw_ucb1 = np.mean(np.cumsum(sw_ucb1_rewards_per_experiment, axis=1), axis=0)
+cum_std_rreward_sw_ucb1 = np.std(np.cumsum(sw_ucb1_rewards_per_experiment, axis=1), axis=0)
 
-plt.figure(1)
+avg_reward_cd_ucb1 = np.mean(cd_ucb1_rewards_per_experiment, axis=0)
+std_reward_cd_ucb1 = np.std(cd_ucb1_rewards_per_experiment, axis=0)
+cum_avg_reward_cd_ucb1 = np.mean(np.cumsum(cd_ucb1_rewards_per_experiment, axis=1), axis=0)
+cum_std_rreward_cd_ucb1 = np.std(np.cumsum(cd_ucb1_rewards_per_experiment, axis=1), axis=0)
+
+# %% Plot the cumulative reward
+plt.figure(2, facecolor="white")
 plt.xlabel("t")
-plt.ylabel("Regret")
-plt.plot(avg_cum_regret_ucb1, 'g')
-plt.plot(avg_cum_regret_sw_ucb1, 'b')
-plt.plot(avg_cum_regret_cd_ucb1, 'r')
-plt.fill_between(range(len(avg_cum_regret_ucb1)), avg_cum_regret_ucb1 - std_cum_regret_ucb1, avg_cum_regret_ucb1 + std_cum_regret_ucb1, alpha=0.2, color='g')
-plt.fill_between(range(len(avg_cum_regret_sw_ucb1)), avg_cum_regret_sw_ucb1 - std_cum_regret_sw_ucb1, avg_cum_regret_sw_ucb1 + std_cum_regret_sw_ucb1, alpha=0.2, color='b')
-plt.fill_between(range(len(avg_cum_regret_cd_ucb1)), avg_cum_regret_cd_ucb1 - std_cum_regret_cd_ucb1, avg_cum_regret_cd_ucb1 + std_cum_regret_cd_ucb1, alpha=0.2, color='b')
-plt.legend(["UCB1", "SW_UCB1", "CUSUM_UCB1"])
-plt.title("Cumulative Regret with standard deviation")
+plt.ylabel("Reward")
+plt.plot(cum_avg_reward_ucb1, "b")
+plt.plot(cum_avg_reward_sw_ucb1, "orange")
+plt.plot(cum_avg_reward_cd_ucb1, 'r')
+plt.fill_between(
+    range(len(cum_avg_reward_ucb1)),
+    cum_avg_reward_ucb1 - cum_std_reward_ucb1,
+    cum_avg_reward_ucb1 + cum_std_reward_ucb1,
+    alpha=0.2,
+    color="b",
+)
+plt.fill_between(
+    range(len(cum_avg_reward_sw_ucb1)),
+    cum_avg_reward_sw_ucb1 - cum_std_rreward_sw_ucb1,
+    cum_avg_reward_sw_ucb1 + cum_std_rreward_sw_ucb1,
+    alpha=0.2,
+    color="orange",
+)
+plt.fill_between(
+    range(len(cum_avg_reward_cd_ucb1)),
+    cum_avg_reward_cd_ucb1 - cum_std_rreward_cd_ucb1,
+    cum_avg_reward_cd_ucb1 + cum_std_rreward_cd_ucb1,
+    alpha=0.2,
+    color="r",
+)
+plt.legend(["UCB1", "SW_UCB1", "CUSUM_UCB1"]) 
+plt.title("Cumulative Reward")
+fig = plt.gcf()
 plt.show()
 
+fig.savefig("results/S5_cumulative_reward.png")
 
+# %% Plot the instantaneous reward
+plt.figure(3, facecolor="white")
+plt.xlabel("t")
+plt.ylabel("Reward")
+plt.plot(avg_reward_ucb1, "b")
+plt.plot(avg_reward_sw_ucb1, "orange")
+plt.plot(avg_reward_cd_ucb1, 'r')
+plt.plot(range(T), opt_vec, "k--")
+plt.fill_between(
+    range(len(avg_reward_ucb1)),
+    avg_reward_ucb1 - std_reward_ucb1,
+    avg_reward_ucb1 + std_reward_ucb1,
+    alpha=0.2,
+    color="b",
+)
+plt.fill_between(
+    range(len(avg_reward_sw_ucb1)),
+    avg_reward_sw_ucb1 - std_reward_sw_ucb1,
+    avg_reward_sw_ucb1 + std_reward_sw_ucb1,
+    alpha=0.2,
+    color="orange",
+)
+plt.fill_between(
+    range(len(avg_reward_cd_ucb1)),
+    avg_reward_cd_ucb1 - std_reward_cd_ucb1,
+    avg_reward_cd_ucb1 + std_reward_cd_ucb1,
+    alpha=0.2,
+    color="r",
+)
+plt.legend(["UCB1", "SW_UCB1", "CUSUM_UCB1"])  
+plt.title("Instantaneous Reward")
+fig = plt.gcf()
+plt.show()
 
+fig.savefig("results/S5_instantaneous_reward.png")
 
-# # %%
-# plt.figure()
-# plt.xlabel("t")
-# plt.ylabel("Regret")
-# plt.plot(ucb1_instantaneous_regret, 'g')
-# plt.hlines(y=0, xmin=0, xmax=T, colors='k', linestyles='dashed')
-# #plt.ylim(-0.1, 1)
-# plt.legend(["UCB1", "Clairvoyant"])
-# plt.title("Instantaneous Regret")
-# plt.show()
-
-# # %%
-# plt.figure()
-# plt.xlabel("t")
-# plt.ylabel("Regret")
-# plt.plot(ucb1_cumulative_regret, 'g')
-# plt.hlines(y=0, xmin=0, xmax=T, colors='k', linestyles='dashed')
-# #plt.ylim(-0.1, 1)
-# plt.legend(["UCB1", "Clairvoyant"])
-# plt.title("Cumulative Regret")
-# plt.show()
+# %%

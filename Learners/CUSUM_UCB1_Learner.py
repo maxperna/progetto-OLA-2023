@@ -50,7 +50,7 @@ class CUSUM_UCB1_Learner(Learner):
         return pulled_arm
     
   
-    def update(self, pulled_arm, reward, price, current_phase):
+    def update(self, pulled_arm, reward, price, current_phase = 0):
 
         if isinstance(self.n_clicks, np.ndarray):
             current_n_clicks = self.n_clicks[current_phase]
@@ -66,7 +66,6 @@ class CUSUM_UCB1_Learner(Learner):
         if reset == True:
             self.detections = np.append(self.detections, self.t if len(self.detections) == 0 else self.detections[-1] + self.t)
             self.counter += 1
-            print(self.counter)
             self.reset()
         
         self.t += 1
@@ -74,11 +73,6 @@ class CUSUM_UCB1_Learner(Learner):
         self.update_observations(pulled_arm, gain)  
         self.expected_rewards[pulled_arm] = (self.expected_rewards[pulled_arm] * (self.n_pulls[pulled_arm] - 1) + gain) / self.n_pulls[pulled_arm] 
 
-        
-        # printing: 
-        #print('time:')
-        #print(self.t if len(self.detections) == 0 else self.detections[-1] + self.t)
-        
 
     def reset(self):
         self.t = 0 

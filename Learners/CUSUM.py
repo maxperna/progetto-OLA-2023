@@ -23,7 +23,7 @@ class CUSUM:
 
 
   def update(self, sample, pulled_arm):
-    self.t += 1 # TODO: verificare se va messo a fine funzione
+    self.t += 1 
 
     if self.t <= self.N:
       self.reference += sample/self.N
@@ -44,7 +44,6 @@ class CUSUM:
       # print('')
       
       if self.g_plus > self.threshold or self.g_minus > self.threshold:
-        print("Abrupt change detected!")
         self.reset()
         return True
       return False
