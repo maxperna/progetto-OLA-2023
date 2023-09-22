@@ -43,10 +43,8 @@ plt.legend(['phase 1', 'phase 2', 'phase 3'])
 plt.title("Conversion Rate Curves")
 plt.show()
 
-# %% Optimization on Slididing Window length
-n_experiments_S5 = 100
-
-TAU = (np.sqrt(T) * np.array([0.5, 1, 1.5, 2, 4, 8, 12, 16, 19])).astype(int)
+# %% Optimization on Slididing Window Length:
+TAU = (np.sqrt(T) * np.array([1, 2, 4, 6, 7, 8, 10, 12, 16, 19])).astype(int)
 
 avg_regret_sw = []
 std_regret_sw = []
@@ -75,7 +73,7 @@ for tau in TAU:
     cum_avg_regret_sw.append(np.mean(np.cumsum(opt_vec - sw_ucb1_rewards_per_experiment, axis=1), axis=0))
     cum_std_regret_sw.append(np.std(np.cumsum(opt_vec - sw_ucb1_rewards_per_experiment, axis=1), axis=0))
 
-# %% Plot the cumulative regret
+# %% Plot the cumulative regret:
 fig = plt.figure(0, facecolor="white")
 plt.xlabel("t")
 plt.ylabel("Regret")
@@ -86,7 +84,7 @@ for i in range(len(TAU)):
         range(len(cum_avg_regret_sw[i])),
         cum_avg_regret_sw[i] - cum_std_regret_sw[i],
         cum_avg_regret_sw[i] + cum_std_regret_sw[i],
-        alpha=0.2,
+        alpha=0.1,
     )
 plt.legend(TAU)
 

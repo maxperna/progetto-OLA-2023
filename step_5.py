@@ -122,7 +122,7 @@ fig = plt.figure(0, facecolor="white")
 plt.xlabel("t")
 plt.ylabel("Regret")
 plt.plot(cum_avg_regret_ucb1, "b")
-plt.plot(cum_avg_regret_sw_ucb1, "orange")
+plt.plot(cum_avg_regret_sw_ucb1, "cyan")
 plt.plot(cum_avg_regret_cd_ucb1, 'r')
 plt.fill_between(
     range(len(cum_avg_regret_ucb1)),
@@ -136,7 +136,7 @@ plt.fill_between(
     cum_avg_regret_sw_ucb1 - cum_std_regret_sw_ucb1,
     cum_avg_regret_sw_ucb1 + cum_std_regret_sw_ucb1,
     alpha=0.2,
-    color="orange",
+    color="cyan",
 )
 plt.fill_between(
     range(len(cum_avg_regret_cd_ucb1)),
@@ -157,7 +157,7 @@ fig = plt.figure(1, facecolor="white")
 plt.xlabel("t")
 plt.ylabel("Regret")
 plt.plot(avg_regret_ucb1, "b")
-plt.plot(avg_regret_sw_ucb1, "orange")
+plt.plot(avg_regret_sw_ucb1, "cyan")
 plt.plot(avg_regret_cd_ucb1, "r")
 plt.hlines(0, 0, T, colors="black", linestyles="dashed")
 plt.fill_between(
@@ -172,7 +172,7 @@ plt.fill_between(
     avg_regret_sw_ucb1 - std_regret_sw_ucb1,
     avg_regret_sw_ucb1 + std_regret_sw_ucb1,
     alpha=0.2,
-    color="orange",
+    color="cyan",
 )
 plt.fill_between(
     range(len(avg_regret_cd_ucb1)),
@@ -209,7 +209,7 @@ plt.figure(2, facecolor="white")
 plt.xlabel("t")
 plt.ylabel("Reward")
 plt.plot(cum_avg_reward_ucb1, "b")
-plt.plot(cum_avg_reward_sw_ucb1, "orange")
+plt.plot(cum_avg_reward_sw_ucb1, "cyan")
 plt.plot(cum_avg_reward_cd_ucb1, 'r')
 plt.fill_between(
     range(len(cum_avg_reward_ucb1)),
@@ -223,7 +223,7 @@ plt.fill_between(
     cum_avg_reward_sw_ucb1 - cum_std_rreward_sw_ucb1,
     cum_avg_reward_sw_ucb1 + cum_std_rreward_sw_ucb1,
     alpha=0.2,
-    color="orange",
+    color="cyan",
 )
 plt.fill_between(
     range(len(cum_avg_reward_cd_ucb1)),
@@ -244,7 +244,7 @@ plt.figure(3, facecolor="white")
 plt.xlabel("t")
 plt.ylabel("Reward")
 plt.plot(avg_reward_ucb1, "b")
-plt.plot(avg_reward_sw_ucb1, "orange")
+plt.plot(avg_reward_sw_ucb1, "cyan")
 plt.plot(avg_reward_cd_ucb1, 'r')
 plt.plot(range(T), opt_vec, "k--")
 plt.fill_between(
@@ -259,7 +259,7 @@ plt.fill_between(
     avg_reward_sw_ucb1 - std_reward_sw_ucb1,
     avg_reward_sw_ucb1 + std_reward_sw_ucb1,
     alpha=0.2,
-    color="orange",
+    color="cyan",
 )
 plt.fill_between(
     range(len(avg_reward_cd_ucb1)),
