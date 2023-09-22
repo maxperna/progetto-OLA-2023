@@ -47,7 +47,8 @@ max_conversion_rate = 0.4  # for plots
 
 p1_non_stationary = np.array(
     [
-        [0.05, 0.1, 0.1, 0.025, 0.0125][0.15, 0.1, 0.05, 0.025, 0.0125],
+        [0.05, 0.1, 0.1, 0.025, 0.0125],
+        [0.15, 0.1, 0.05, 0.025, 0.0125],
         [0.0125, 0.025, 0.1, 0.1, 0.05],
     ]
 )
@@ -107,5 +108,5 @@ p1_step_6 = np.array(
     ]
 )
 
-n_experiments_S6 = 20
+n_experiments_S6 = 100
 selected_bid_S6 = 2

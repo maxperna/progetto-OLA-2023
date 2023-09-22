@@ -17,19 +17,15 @@ n_phases = len(p1_non_stationary)
 phases_len = np.ceil(T/n_phases)
 
 optimum  = Collector.clairvoyant()
-#print(optimum)
 
 opt = np.array([])
 for i in range(0,n_phases):
     opt = np.append(opt,optimum[i][2])
-#print(opt)
 
 opt_vec = np.array([])
 for i in range(0, T):
     current_phase = int(i/phases_len)
     opt_vec = np.append(opt_vec, opt[current_phase])
-#print(opt_vec)
-
 
 selected_bid = np.array([])
 n_clicks = np.array([])
@@ -38,9 +34,6 @@ for i in range(0,n_phases):
     selected_bid = np.append(selected_bid, optimum[i][1])
     n_clicks = np.append(n_clicks, Collector.click_vs_bid(optimum[i][1]))
     cost_of_click = np.append(cost_of_click, Collector.cost_vs_bid(optimum[i][1]))
-# print(selected_bid)
-# print(n_clicks)
-# print(cost_of_click)
 
 
 # %% Plot the demand curves and the expected reward curves for each phase:
@@ -55,7 +48,6 @@ n_experiments_S5 = 100
 
 TAU = (np.sqrt(T) * np.array([0.5, 1, 1.5, 2, 4, 8, 12, 16, 19])).astype(int)
 
-sw_ucb1_rewards_per_experiment = []
 avg_regret_sw = []
 std_regret_sw = []
 cum_avg_regret_sw = []
