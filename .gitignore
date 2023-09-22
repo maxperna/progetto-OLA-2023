@@ -3,6 +3,3 @@ venvOLA/
 
 # Ignore cache
 __pycache__/
-
-# .vscode
-.vscode
